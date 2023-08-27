@@ -1,0 +1,35 @@
+// required to get $orange variable
+$primary-dark: #737378;
+$primary: #d8ba9c;
+$secondary: #737378;
+
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+@import "../../../node_modules/bootstrap/scss/variables-dark";
+@import "../../../node_modules/bootstrap/scss/maps";
+@import "../../../node_modules/bootstrap/scss/mixins";
+@import "../../../node_modules/bootstrap/scss/utilities";
+
+//$card-cap-bg: rgba(var(--#{$prefix}emphasis-color), 1);
+:root,
+[data-bs-theme="light"] {
+  --#{$prefix}custom-card-cap-bg: #{to-rgb($primary)};
+  --#{$prefix}soup-bg: #{$primary};
+}
+:root,
+[data-bs-theme="dark"] {
+  --#{$prefix}custom-card-cap-bg: #{to-rgb($primary-dark)};
+  --#{$prefix}soup-bg: #{$primary-dark};
+}
+
+$card-cap-bg: rgba(var(--#{$prefix}custom-card-cap-bg), .6);
+$pagination-active-bg: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
+$pagination-active-border-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
+$pagination-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
+$pagination-hover-color: var(--#{prefix}card-cap-color);
+$form-check-input-checked-bg-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
+$form-check-input-checked-border-color: rgba(var(--#{$prefix}custom-card-cap-bg), .5);
+$form-check-input-bg: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
+
+// set changes
+@import "../../../node_modules/bootstrap/scss/bootstrap";
