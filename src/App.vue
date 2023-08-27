@@ -33,18 +33,15 @@ const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 
 const baseUrl = 'https://lunch.zvon.tech/api';
 
 const swapRestaurants = (id: number, direction: Direction) => {
-    console.log("DOING");
     const oldIndex = store.state.restaurantOrder.get(id);
     if (oldIndex === undefined || oldIndex === null) {
         return;
     }
-    console.log("DOING2");
 
     const newIndex = oldIndex + (direction == Direction.LEFT ? -1 : 1);
     if(newIndex < 0 || newIndex >= menus.value.length) {
         return;
     }
-    console.log("DOING3");
 
     let swapId = -1;
     for (let [key, value] of store.state.restaurantOrder.entries()) {
