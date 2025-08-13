@@ -1,6 +1,6 @@
 <template>
     <div id="lunchinator" class="pt-4">
-        <h1 class="text-center">Lunchinator</h1>
+        <h1 class="text-center">Lunchinator Hop Hop</h1>
     </div>
     <div class="container p-4">
         <div class="row">
