@@ -30,7 +30,7 @@ import { key } from './store';
 const menus: Ref<RestaurantDay[]> = ref([]);
 const selectedDay: Ref<number> = ref(new Date().getDay());
 const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-const baseUrl = 'https://lunch.zvon.tech/api';
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const swapRestaurants = (id: number, direction: Direction) => {
     const oldIndex = store.state.restaurantOrder.get(id);
