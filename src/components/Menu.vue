@@ -3,9 +3,9 @@
         <div class="card h-100">
             <div class="card-header">
                 <div class="row">
-                    <div class="col col-10">
+                    <a class="col col-10 text-decoration-none text-reset" :href="menu.url">
                         {{ menu.restaurant }}
-                    </div>
+                    </a>
                     <div class="col col-1">
                         <button class="btn w-100" @click="swapFunction(menu.id, Direction.LEFT)" style="padding-left: 0; border: none" :disabled="store.state.restaurantOrder.get(menu.id) === 0">
                             <font-awesome-icon :icon="['fas', 'arrow-left']"/>

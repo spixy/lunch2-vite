@@ -1,6 +1,7 @@
 export type Restaurant = {
     id: number
     restaurant: string
+    url: string
     dailymenus: Menu[]
     permanentmeals: Meal[]
 }
@@ -8,6 +9,7 @@ export type Restaurant = {
 export type RestaurantDay = {
     id: number,
     restaurant: string
+    url: string
     meals: Meal[]
     permanentmeals: Meal[]
 }

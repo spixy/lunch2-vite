@@ -15,6 +15,7 @@ export const restaurantToRestaurantDay = (data: Restaurant[]): RestaurantDay[]  
         result.push({
             id: restaurant.id,
             restaurant: restaurant.restaurant,
+            url: restaurant.url,
             meals: restaurant.dailymenus[0].meals.length == 0 && restaurant.permanentmeals.length == 0 ? noDataMeals : restaurant.dailymenus[0].meals,
             permanentmeals: restaurant.permanentmeals ?? [],
         });
