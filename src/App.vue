@@ -1,6 +1,6 @@
 <template>
     <div id="lunchinator" class="pt-4">
-        <h1 class="text-center">Lunchinator Hop Hop</h1>
+        <h1 class="text-center">{{ title }}</h1>
     </div>
     <div class="container p-4">
         <div class="row">
@@ -27,10 +27,24 @@ import ThemeSelector from './components/ThemeSelector.vue';
 import { useStore } from 'vuex';
 import { key } from './store';
 
+const titles = [
+    'Hop Hop',
+    'Pomáhame si',
+    'bum bum to dělá',
+    'Teď jse du vysrat, ale pořádne',
+    'tady je bubak ty ho nevidiš ale ja jo',
+    '- To jsou písmenka nebo čísla?',
+    '- To je kubatura, ale nevím co to je',
+    '- To udělali vaši lidi',
+    'Žádám aby to bylo řádně vyšetřeno',
+    'Zabiju se',
+];
 const menus: Ref<RestaurantDay[]> = ref([]);
 const selectedDay: Ref<number> = ref(new Date().getDay());
 const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const baseUrl = import.meta.env.VITE_API_URL;
+
+const title = 'Lunchinator ' + titles[Math.floor(Math.random() * titles.length)];
 
 const swapRestaurants = (id: number, direction: Direction) => {
     const oldIndex = store.state.restaurantOrder.get(id);
