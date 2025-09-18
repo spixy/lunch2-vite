@@ -42,7 +42,7 @@ const titles = [
 const menus: Ref<RestaurantDay[]> = ref([]);
 const selectedDay: Ref<number> = ref(new Date().getDay());
 const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-const baseUrl = 'http://localhost:8080'; //import.meta.env.VITE_API_URL;
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const title = 'Lunchinator ' + titles[Math.floor(Math.random() * titles.length)];
 
