@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, onMounted, ref } from 'vue';
+import { Ref, onMounted, ref, computed } from 'vue';
 import DaySelection from './components/DaySelection.vue'
 import Menu from './components/Menu.vue'
 import { Direction, Restaurant, RestaurantDay } from './types/Restaurant';
@@ -31,20 +31,30 @@ const titles = [
     'Hop Hop',
     'Pomáhame si',
     'bum bum to dělá',
-    'Teď jse du vysrat, ale pořádne',
+    'Teď se du vysrat, ale pořádne',
     'tady je bubak ty ho nevidiš ale ja jo',
     '- To jsou písmenka nebo čísla?',
     '- To je kubatura, ale nevím co to je',
     '- To udělali vaši lidi',
     'Žádám aby to bylo řádně vyšetřeno',
     'Zabiju se',
+    'Já mu trefim',
+    "a pivko na pni",
+    "televizia Markíza uvádzá {title}",
+    "V O L H A"
 ];
 const menus: Ref<RestaurantDay[]> = ref([]);
 const selectedDay: Ref<number> = ref(new Date().getDay());
 const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const title = 'Lunchinator ' + titles[Math.floor(Math.random() * titles.length)];
+const title =  computed(() => {
+    const currentTitle = titles[Math.floor(Math.random() * titles.length)];
+    if (currentTitle.includes('{title}')) {
+        return currentTitle.replace('{title}', 'Lunchinator');
+    }
+    return "Lunchinator " + currentTitle;
+});
 
 const swapRestaurants = (id: number, direction: Direction) => {
     const oldIndex = store.state.restaurantOrder.get(id);
