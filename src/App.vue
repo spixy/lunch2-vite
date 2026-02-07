@@ -1,6 +1,14 @@
 <template>
+  <RetardBackground />
     <div id="lunchinator" class="pt-4">
-        <h1 class="text-center">{{ title }}</h1>
+        <h1 class="text-center" :class="{ 'retard-bounce': store.state.retardMode }">
+            <marquee v-if="store.state.retardMode" behavior="alternate" scrollamount="20">
+                {{ title }}
+            </marquee>
+            <template v-else>
+                {{ title }}
+            </template>
+        </h1>
     </div>
     <div class="container p-4">
         <div class="row">
@@ -9,6 +17,7 @@
             </div>
             <div class="col col-2 col-md-1">
                 <ThemeSelector />
+                <RetardSelector />
             </div>
         </div>
         <div class="row equal row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-3">
@@ -26,6 +35,8 @@ import { restaurantToRestaurantDay } from './services/restaurantServices';
 import ThemeSelector from './components/ThemeSelector.vue';
 import { useStore } from 'vuex';
 import { key } from './store';
+import RetardSelector from "./components/RetardSelector.vue";
+import RetardBackground from "./components/RetardBackground.vue";
 
 const titles = [
     'Hop Hop',
@@ -41,7 +52,8 @@ const titles = [
     'Já mu trefim',
     "a pivko na pni",
     "televizia Markíza uvádzá {title}",
-    "V O L H A"
+    "V O L H A",
+    "- Pomoc"
 ];
 const menus: Ref<RestaurantDay[]> = ref([]);
 const selectedDay: Ref<number> = ref(new Date().getDay());
@@ -127,22 +139,36 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+.retard-bounce {
+    animation: retard-bounce 0.5s infinite linear;
+    display: block;
 }
 
-.logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-    filter: drop-shadow(0 0 2em #42b883aa);
+@keyframes retard-bounce {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        color: #ff0000;
+    }
+    25% {
+        color: #ffff00;
+        transform: translateY(-10px) rotate(-5deg) scale(1.1);
+    }
+    50% {
+        color: #00ff00;
+        transform: translateY(-20px) rotate(5deg) scale(1.2);
+        text-shadow: 2px 2px 10px #ff00ff, -2px -2px 10px #00ffff;
+    }
+    75% {
+        color: #00ffff;
+        transform: translateY(-10px) rotate(-5deg) scale(1.1);
+    }
+    100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        color: #0000ff;
+    }
 }
 </style>
 
 <style lang="scss">
-@import "./assets/scss/style.scss"
+@import "./assets/scss/style.scss";
 </style>
