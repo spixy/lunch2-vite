@@ -3,6 +3,7 @@ import { createStore, Store } from 'vuex';
 
 export interface State {
     darkTheme: boolean
+    retardMode: boolean
     restaurantOrder: Map<number, number>
 }
 
@@ -34,12 +35,17 @@ const storeRestaurantOrder = (order: Map<number, number>): void => {
 export const store = createStore<State>({
     state: {
         darkTheme: window.localStorage.getItem("darkTheme") === "true" ?? false,
+        retardMode: window.localStorage.getItem("retardMode") === "true" ?? false,
         restaurantOrder: restaurantOrderFromLocalStorage(window.localStorage.getItem("restaurantOrder"))
     },
     mutations: {
         toggleDarkTheme(state: State) {
             state.darkTheme = !state.darkTheme;
             window.localStorage.setItem("darkTheme", state.darkTheme ? "true" : "false");
+        },
+        toggleRetardMode(state: State) {
+            state.retardMode = !state.retardMode;
+            window.localStorage.setItem("retardMode", state.retardMode ? "true" : "false");
         },
         updateRestaurantOrder(state: State, payload: { id: number, newIndex: number, oldIndex: number, swapId: number }) {
             const { id, newIndex, oldIndex, swapId } = payload;
