@@ -13,7 +13,7 @@
             <button
               class="btn w-100"
               style="padding-left: 0; border: none"
-              :disabled="store.state.restaurantOrder.get(menu.id) === 0"
+              :disabled="getRestaurantIndex(menu.id) === 0"
               @click="swapFunction(menu.id, Direction.LEFT)"
             >
               <font-awesome-icon :icon="['fas', 'arrow-left']" />
@@ -24,8 +24,8 @@
               class="btn w-100"
               style="padding-left: 0; border: none"
               :disabled="
-                store.state.restaurantOrder.get(menu.id) ===
-                store.state.restaurantOrder.size - 1
+                getRestaurantIndex(menu.id) ===
+                store.state.restaurantOrder.length - 1
               "
               @click="swapFunction(menu.id, Direction.RIGHT)"
             >
@@ -159,6 +159,9 @@ defineProps<{
   swapFunction: (id: number, direction: Direction) => void;
 }>();
 let tooltips: bootstrap.Tooltip[] = [];
+
+const getRestaurantIndex = (id: number): number =>
+  store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
 
 onMounted(() => {
   [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].forEach((el) =>

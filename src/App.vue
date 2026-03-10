@@ -57,7 +57,7 @@ import { Direction, Restaurant, RestaurantDay } from "./types/Restaurant";
 import { restaurantToRestaurantDay } from "./services/restaurantServices";
 import ThemeSelector from "./components/ThemeSelector.vue";
 import { useStore } from "vuex";
-import { key } from "./store";
+import { key, type SavedRestaurant } from "./store";
 import RetardSelector from "./components/RetardSelector.vue";
 import RetardBackground from "./components/RetardBackground.vue";
 import Draggable from "vuedraggable";
@@ -126,8 +126,16 @@ onMounted(() => {
   );
 });
 
+const getRestaurantIndex = (id: number): number | undefined => {
+  return store.state.restaurantOrder.find((item) => item.id === id)?.index;
+};
+
+const getRestaurantIdByIndex = (index: number): number | undefined => {
+  return store.state.restaurantOrder.find((item) => item.index === index)?.id;
+};
+
 const swapRestaurants = (id: number, direction: Direction) => {
-  const oldIndex = store.state.restaurantOrder.get(id);
+  const oldIndex = getRestaurantIndex(id);
   if (oldIndex === undefined || oldIndex === null) {
     return;
   }
@@ -137,46 +145,55 @@ const swapRestaurants = (id: number, direction: Direction) => {
     return;
   }
 
-  let swapId = -1;
-  for (const [key, value] of store.state.restaurantOrder.entries()) {
-    if (value === newIndex) {
-      swapId = key;
-      break;
-    }
+  const swapId = getRestaurantIdByIndex(newIndex);
+  if (swapId === undefined) {
+    return;
   }
   const tmpRestaurant = menus.value[newIndex];
   menus.value[newIndex] = menus.value[oldIndex];
   menus.value[oldIndex] = tmpRestaurant;
-  store.commit("updateRestaurantOrder", { id, newIndex, oldIndex, swapId });
+  store.commit("updateRestaurantOrder", {
+    id,
+    newIndex,
+    oldIndex,
+    swapId,
+  });
 };
 
 const updateRestaurantOrder = (restaurants: Restaurant[]) => {
-  const restaurantOrder = new Map(store.state.restaurantOrder);
+  const currentOrder: SavedRestaurant[] = [...store.state.restaurantOrder];
+
   for (const restaurant of restaurants) {
-    if (!restaurantOrder.has(restaurant.id)) {
-      restaurantOrder.set(restaurant.id, restaurantOrder.size);
+    const existing = currentOrder.find((item) => item.id === restaurant.id);
+    if (!existing) {
+      currentOrder.push({
+        id: restaurant.id,
+        index: currentOrder.length,
+        isHidden: false,
+      });
     }
   }
-  // TODO check if works?
-  for (const [key, value] of restaurantOrder.entries()) {
-    if (restaurants.filter((res) => res.id == key).length === 0) {
-      restaurantOrder.delete(key);
-      for (const [key2, value2] of restaurantOrder.entries()) {
-        if (value2 >= value) {
-          restaurantOrder.set(key2, value2 - 1);
-        }
-      }
-    }
-  }
-  store.commit("setRestaurantOrder", restaurantOrder);
+
+  const restaurantIds = new Set(restaurants.map((res) => res.id));
+
+  const filteredOrder = currentOrder
+    .filter((item) => restaurantIds.has(item.id))
+    .sort((a, b) => a.index - b.index)
+    .map((item, index) => ({
+      ...item,
+      index,
+    }));
+
+  store.commit("setRestaurantOrder", filteredOrder);
 };
 
 const sortRestaurantDays = (restaurants: RestaurantDay[]): RestaurantDay[] => {
-  const result = new Array<RestaurantDay>(restaurants.length);
-  for (const restaurant of restaurants) {
-    result[store.state.restaurantOrder.get(restaurant.id) ?? 0] = restaurant;
-  }
-  return result;
+  const getIndex = (id: number): number =>
+    store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
+
+  return [...restaurants].sort(
+    (a, b) => getIndex(a.id) - getIndex(b.id),
+  );
 };
 
 const getRestaurantsForDay = async (day: number) => {
@@ -192,10 +209,19 @@ getRestaurantsForDay(selectedDay.value);
 
 const onDragEnd = () => {
   drag.value = false;
-  const newRestaurantMap = new Map(
-    menus.value.map(({ id }, index) => [id, index]),
+  const newRestaurantOrder: SavedRestaurant[] = menus.value.map(
+    ({ id }, index) => {
+      const existing = store.state.restaurantOrder.find(
+        (item) => item.id === id,
+      );
+      return {
+        id,
+        index,
+        isHidden: existing?.isHidden ?? false,
+      };
+    },
   );
-  store.commit("setRestaurantOrder", newRestaurantMap);
+  store.commit("setRestaurantOrder", newRestaurantOrder);
 };
 </script>
 

@@ -1,37 +1,48 @@
 import { InjectionKey } from "vue";
 import { createStore, Store } from "vuex";
 
+export type SavedRestaurant = {
+  id: number;
+  index: number;
+  isHidden: boolean;
+};
+
 export interface State {
   darkTheme: boolean;
   retardMode: boolean;
-  restaurantOrder: Map<number, number>;
+  restaurantOrder: SavedRestaurant[];
 }
 
 export const key: InjectionKey<Store<State>> = Symbol();
 
 const restaurantOrderFromLocalStorage = (
   order: string | null,
-): Map<number, number> => {
-  const map = new Map<number, number>();
+): SavedRestaurant[] => {
   if (!order) {
-    return map;
+    return [];
   }
-  const entries = order.split(",");
-  for (let i = 0; i < entries.length; i += 2) {
-    const key = Number.parseInt(entries[i]);
-    const value = Number.parseInt(entries[i + 1]);
-    map.set(key, value);
+  try {
+    const parsed = JSON.parse(order);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.map((item: Partial<SavedRestaurant>, index: number) => ({
+      id: typeof item.id === "number" ? item.id : -1,
+      index:
+        typeof item.index === "number"
+          ? item.index
+          : typeof index === "number"
+            ? index
+            : 0,
+      isHidden: typeof item.isHidden === "boolean" ? item.isHidden : false,
+    }));
+  } catch {
+    return [];
   }
-  return map;
 };
 
-const storeRestaurantOrder = (order: Map<number, number>): void => {
-  let resultString = "";
-  for (const [key, value] of order.entries()) {
-    resultString += key.toString() + "," + value.toString() + ",";
-  }
-  resultString = resultString.slice(0, Math.max(0, resultString.length - 1));
-  globalThis.localStorage.setItem("restaurantOrder", resultString);
+const storeRestaurantOrder = (order: SavedRestaurant[]): void => {
+  globalThis.localStorage.setItem("restaurantOrder", JSON.stringify(order));
 };
 
 export const store = createStore<State>({
@@ -68,11 +79,18 @@ export const store = createStore<State>({
       },
     ) {
       const { id, newIndex, oldIndex, swapId } = payload;
-      state.restaurantOrder.set(swapId, oldIndex!);
-      state.restaurantOrder.set(id, newIndex);
+      const target = state.restaurantOrder.find((item) => item.id === id);
+      const swapTarget = state.restaurantOrder.find(
+        (item) => item.id === swapId,
+      );
+      if (!target || !swapTarget) {
+        return;
+      }
+      target.index = newIndex;
+      swapTarget.index = oldIndex;
       storeRestaurantOrder(state.restaurantOrder);
     },
-    setRestaurantOrder(state: State, payload: Map<number, number>) {
+    setRestaurantOrder(state: State, payload: SavedRestaurant[]) {
       state.restaurantOrder = payload;
       storeRestaurantOrder(state.restaurantOrder);
     },
