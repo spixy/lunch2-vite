@@ -11,14 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.4.0",
-    "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.1",
-    "font-awesome": "^4.7.0",
     "sass": "^1.64.1",
     "vue": "^3.3.4",
+    "vue-icons-plus": "^0.1.9",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {

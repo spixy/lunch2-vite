@@ -2,34 +2,43 @@
   <div class="col pt-4 menu-card">
     <div class="card h-100">
       <div class="card-header">
-        <div class="row">
+        <div class="row align-items-center p-2">
           <a
-            class="col col-10 text-decoration-none text-reset"
+            class="col col-9 text-decoration-none text-reset"
             :href="menu.url"
           >
             {{ menu.restaurant }}
           </a>
-          <div class="col col-1">
+          <div class="col col-1 p-0">
             <button
               class="btn w-100"
-              style="padding-left: 0; border: none"
+              style="padding: 0; border: none"
               :disabled="getRestaurantIndex(menu.id) === 0"
               @click="swapFunction(menu.id, Direction.LEFT)"
             >
-              <font-awesome-icon :icon="['fas', 'arrow-left']" />
+              <BiLeftArrowAlt />
             </button>
           </div>
-          <div class="col col-1">
+          <div class="col col-1 p-0">
             <button
               class="btn w-100"
-              style="padding-left: 0; border: none"
+              style="padding: 0; border: none"
               :disabled="
                 getRestaurantIndex(menu.id) ===
                 store.state.restaurantOrder.length - 1
               "
               @click="swapFunction(menu.id, Direction.RIGHT)"
             >
-              <font-awesome-icon :icon="['fas', 'arrow-right']" />
+              <BiRightArrowAlt />
+            </button>
+          </div>
+          <div class="col col-1 p-0">
+            <button
+              class="btn w-100 hide-toggle-btn"
+              @click="hideRestaurant(menu.id)"
+            >
+              <BiSolidShow class="icon-show" />
+              <BiSolidHide class="icon-hide" />
             </button>
           </div>
         </div>
@@ -151,6 +160,12 @@ import { onMounted, onUpdated } from "vue";
 import { Direction, RestaurantDay } from "../types/Restaurant.ts";
 import { useStore } from "vuex";
 import { key } from "../store.ts";
+import {
+  BiSolidShow,
+  BiSolidHide,
+  BiLeftArrowAlt,
+  BiRightArrowAlt,
+} from "vue-icons-plus/bi";
 
 const store = useStore(key);
 
@@ -162,6 +177,10 @@ let tooltips: bootstrap.Tooltip[] = [];
 
 const getRestaurantIndex = (id: number): number =>
   store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
+
+const hideRestaurant = (id: number): void => {
+  store.commit("setRestaurantHidden", id);
+};
 
 onMounted(() => {
   [...document.querySelectorAll('[data-bs-toggle="tooltip"]')].forEach((el) =>
@@ -179,3 +198,27 @@ onUpdated(() => {
   );
 });
 </script>
+
+<style scoped>
+.hide-toggle-btn {
+  padding: 0;
+  border: none;
+  opacity: 0.7;
+}
+
+.hide-toggle-btn .icon-hide {
+  display: none;
+}
+
+.hide-toggle-btn:hover {
+  opacity: 1;
+}
+
+.hide-toggle-btn:hover .icon-show {
+  display: none;
+}
+
+.hide-toggle-btn:hover .icon-hide {
+  display: inline-block;
+}
+</style>

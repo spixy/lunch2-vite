@@ -16,15 +16,17 @@
           : 'var(--bs-primary)',
       }"
       for="flexSwitchCheckChecked"
-      ><font-awesome-icon
-        :icon="['fas', store.state.darkTheme ? 'moon' : 'sun']"
-    /></label>
+    >
+      <BiMoon v-if="store.state.darkTheme" />
+      <BiSolidSun v-else />
+    </label>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useStore } from "vuex";
 import { key } from "../store";
+import { BiMoon, BiSolidSun } from "vue-icons-plus/bi";
 
 const store = useStore(key);
 

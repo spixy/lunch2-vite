@@ -94,5 +94,13 @@ export const store = createStore<State>({
       state.restaurantOrder = payload;
       storeRestaurantOrder(state.restaurantOrder);
     },
+    setRestaurantHidden(state: State, id: number) {
+      const target = state.restaurantOrder.find((item) => item.id === id);
+      if (!target) {
+        return;
+      }
+      target.isHidden = true;
+      storeRestaurantOrder(state.restaurantOrder);
+    },
   },
 });

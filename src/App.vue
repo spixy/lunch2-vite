@@ -41,6 +41,7 @@
     >
       <template #item="{ element }">
         <MenuCard
+          v-if="!isRestaurantHidden(element.id)"
           :menu="element"
           :swap-function="swapRestaurants"
         />
@@ -132,6 +133,13 @@ const getRestaurantIndex = (id: number): number | undefined => {
 
 const getRestaurantIdByIndex = (index: number): number | undefined => {
   return store.state.restaurantOrder.find((item) => item.index === index)?.id;
+};
+
+const isRestaurantHidden = (id: number): boolean => {
+  return (
+    store.state.restaurantOrder.find((item) => item.id === id)?.isHidden ??
+    false
+  );
 };
 
 const swapRestaurants = (id: number, direction: Direction) => {
