@@ -33,14 +33,8 @@
         <RetardSelector />
       </div>
     </div>
-    <draggable
+    <Draggable
       v-model="menus"
-      class="row equal row-cols-1 justify-content-center"
-      :component-data="{
-        tag: 'ul',
-        type: 'transition-group',
-        name: !drag ? 'flip-list' : null,
-      }"
       v-bind="dragOptions"
       @start="drag = true"
       @end="onDragEnd"
@@ -51,7 +45,7 @@
           :swap-function="swapRestaurants"
         />
       </template>
-    </draggable>
+    </Draggable>
   </div>
 </template>
 
@@ -66,7 +60,7 @@ import { useStore } from "vuex";
 import { key } from "./store";
 import RetardSelector from "./components/RetardSelector.vue";
 import RetardBackground from "./components/RetardBackground.vue";
-import draggable from "vuedraggable";
+import Draggable from "vuedraggable";
 
 const titles = [
   "Hop Hop",
@@ -100,10 +94,17 @@ const baseUrl = import.meta.env.VITE_API_URL;
 const drag = ref(false);
 const dragOptions = computed(() => {
   return {
+    class: "row equal row-cols-1 justify-content-center",
     animation: 200,
     group: "description",
     disabled: false,
     ghostClass: "ghost",
+    itemKey: "id",
+    componentData: {
+      tag: "ul",
+      type: "transition-group",
+      name: !drag.value ? "flip-list" : null,
+    },
   };
 });
 
