@@ -20,7 +20,7 @@
       </template>
     </h1>
   </div>
-  <div class="container p-4">
+  <div class="p-4">
     <div class="row">
       <div class="col col-11">
         <DaySelection
@@ -33,14 +33,25 @@
         <RetardSelector />
       </div>
     </div>
-    <div class="row equal row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-3">
-      <MenuCard
-        v-for="menu in menus"
-        :key="menu.id"
-        :menu="menu"
-        :swap-function="swapRestaurants"
-      />
-    </div>
+    <draggable
+      v-model="menus"
+      class="row equal row-cols-1 justify-content-center"
+      :component-data="{
+        tag: 'ul',
+        type: 'transition-group',
+        name: !drag ? 'flip-list' : null,
+      }"
+      v-bind="dragOptions"
+      @start="drag = true"
+      @end="onDragEnd"
+    >
+      <template #item="{ element }">
+        <MenuCard
+          :menu="element"
+          :swap-function="swapRestaurants"
+        />
+      </template>
+    </draggable>
   </div>
 </template>
 
@@ -55,6 +66,7 @@ import { useStore } from "vuex";
 import { key } from "./store";
 import RetardSelector from "./components/RetardSelector.vue";
 import RetardBackground from "./components/RetardBackground.vue";
+import draggable from "vuedraggable";
 
 const titles = [
   "Hop Hop",
@@ -85,6 +97,17 @@ const days = [
   "saturday",
 ];
 const baseUrl = import.meta.env.VITE_API_URL;
+const drag = ref(false);
+const dragOptions = computed(() => {
+  return {
+    animation: 200,
+    group: "description",
+    disabled: false,
+    ghostClass: "ghost",
+  };
+});
+
+const store = useStore(key);
 
 const title = computed(() => {
   const currentTitle = titles[Math.floor(Math.random() * titles.length)];
@@ -92,6 +115,14 @@ const title = computed(() => {
     return currentTitle.replace("{title}", "Lunchinator");
   }
   return "Lunchinator " + currentTitle;
+});
+
+onMounted(() => {
+  //document.querySelector("html")!.setAttribute('data-bs-theme', 'light');
+  document.body.setAttribute(
+    "data-bs-theme",
+    store.state.darkTheme ? "dark" : "light",
+  );
 });
 
 const swapRestaurants = (id: number, direction: Direction) => {
@@ -157,15 +188,14 @@ const getRestaurantsForDay = async (day: number) => {
 };
 
 getRestaurantsForDay(selectedDay.value);
-const store = useStore(key);
 
-onMounted(() => {
-  //document.querySelector("html")!.setAttribute('data-bs-theme', 'light');
-  document.body.setAttribute(
-    "data-bs-theme",
-    store.state.darkTheme ? "dark" : "light",
+const onDragEnd = () => {
+  drag.value = false;
+  const newRestaurantMap = new Map(
+    menus.value.map(({ id }, index) => [id, index]),
   );
-});
+  store.commit("setRestaurantOrder", newRestaurantMap);
+};
 </script>
 
 <style scoped>

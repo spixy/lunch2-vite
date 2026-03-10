@@ -1,5 +1,5 @@
 <template>
-  <div class="col pt-4">
+  <div class="col pt-4 menu-card">
     <div class="card h-100">
       <div class="card-header">
         <div class="row">
