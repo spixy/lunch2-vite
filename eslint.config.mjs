@@ -33,6 +33,7 @@ export default typescriptEslint.config([
       "unused-imports/no-unused-imports": "error",
       "vue/html-indent": "off",
       "vue/html-self-closing": "off",
+      "vue/singleline-html-element-content-newline": "off",
       "unused-imports/no-unused-vars": [
         "error",
         {
