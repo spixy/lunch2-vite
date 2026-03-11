@@ -34,6 +34,7 @@
             >
               <marquee
                 v-if="store.state.retardMode"
+                :scrollamount="scaledScrollAmount()"
                 style="max-width: 400px"
               >
                 {{ restaurant.restaurant }}
@@ -82,6 +83,10 @@ const hideButtonClass = computed(() => {
     ? "btn btn-outline-secondary hide-button-dark"
     : "btn btn-outline-primary hide-button-light";
 });
+
+const randomScrollAmount = () => Math.floor(Math.random() * 70) + 30;
+
+const scaledScrollAmount = () => Math.floor(randomScrollAmount() * store.state.retardScale);
 
 const isRestaurantHidden = (id: number): boolean => {
   return store.state.restaurantOrder.find((item) => item.id === id)?.isHidden ?? false;

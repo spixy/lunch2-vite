@@ -5,20 +5,20 @@
   >
     <div
       v-for="(img, index) in selectedImages"
-      :key="index"
+      :key="index + '-' + retardScaleKey"
       class="image-container"
       :style="containerStyles[index]"
     >
       <marquee
         :behavior="behaviors[index % behaviors.length]"
         :direction="horizontalDirections[index % horizontalDirections.length]"
-        :scrollamount="scrollAmounts[index % scrollAmounts.length]"
+        :scrollamount="scaledScrollAmount(index)"
         class="floating-marquee-horizontal"
       >
         <marquee
           :behavior="behaviors[(index + 1) % behaviors.length]"
           :direction="verticalDirections[index % verticalDirections.length]"
-          :scrollamount="scrollAmounts[(index + 1) % scrollAmounts.length]"
+          :scrollamount="scaledScrollAmount(index + 1)"
           class="floating-marquee-vertical"
         >
           <img
@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { useStore } from "vuex";
 import { key } from "../store";
-import { ref, onMounted, watch, onUnmounted } from "vue";
+import { ref, onMounted, watch, onUnmounted, computed } from "vue";
 
 const store = useStore(key);
 const selectedImages = ref<string[]>([]);
@@ -54,6 +54,11 @@ const behaviors = ["alternate", "scroll"];
 const horizontalDirections = ["left", "right"];
 const verticalDirections = ["up", "down"];
 const scrollAmounts = [10, 15, 20, 25, 30, 35];
+
+const retardScale = computed(() => store.state.retardScale);
+const retardScaleKey = computed(() => retardScale.value.toFixed(2));
+
+const scaledScrollAmount = (index: number) => scrollAmounts[index % scrollAmounts.length] * retardScale.value;
 
 const selectRandomImages = () => {
   if (imagePaths.length === 0) return;

@@ -10,6 +10,7 @@ export type SavedRestaurant = {
 export interface State {
   darkTheme: boolean;
   retardMode: boolean;
+  retardScale: number;
   restaurantOrder: SavedRestaurant[];
 }
 
@@ -42,6 +43,13 @@ export const store = createStore<State>({
   state: {
     darkTheme: globalThis.localStorage.getItem("darkTheme") === "true" || false,
     retardMode: globalThis.localStorage.getItem("retardMode") === "true" || false,
+    retardScale: (() => {
+      const value = globalThis.localStorage.getItem("retardScale");
+      if (value === null) {
+        return 1;
+      }
+      return parseFloat(value);
+    })(),
     restaurantOrder: restaurantOrderFromLocalStorage(globalThis.localStorage.getItem("restaurantOrder")),
   },
   mutations: {
@@ -52,6 +60,10 @@ export const store = createStore<State>({
     toggleRetardMode(state: State) {
       state.retardMode = !state.retardMode;
       globalThis.localStorage.setItem("retardMode", state.retardMode ? "true" : "false");
+    },
+    setRetardScale(state: State, value: number) {
+      state.retardScale = value;
+      globalThis.localStorage.setItem("retardScale", String(value));
     },
     updateRestaurantOrder(
       state: State,
