@@ -11,7 +11,8 @@
       <marquee
         v-if="store.state.retardMode"
         behavior="alternate"
-        scrollamount="20"
+        :scrollamount="20 * retardScale"
+        :key="retardScaleKey"
       >
         {{ title }}
       </marquee>
@@ -21,17 +22,22 @@
     </h1>
   </div>
   <div class="p-4">
-    <div class="row">
-      <div class="col col-10">
+    <div class="row justify-content-center">
+      <div class="col col-8">
         <DaySelection
           :selected="selectedDay"
           :update-func="getRestaurantsForDay"
         />
       </div>
       <div class="col col-2 col-md-1">
+        <RetardScale />
+      </div>
+      <div class="col col-2 col-md-1">
+        <HiddenMenusDialog :menus="menus" />
+      </div>
+      <div class="col col-2 col-md-1">
         <ThemeSelector />
         <RetardSelector />
-        <HiddenMenusDialog :menus="menus" />
       </div>
     </div>
     <Draggable
@@ -64,6 +70,7 @@ import RetardSelector from "./components/RetardSelector.vue";
 import RetardBackground from "./components/RetardBackground.vue";
 import Draggable from "vuedraggable";
 import HiddenMenusDialog from "./components/HiddenMenusDialog.vue";
+import RetardScale from "./components/RetardScale.vue";
 
 const titles = [
   "Hop Hop",
@@ -104,6 +111,9 @@ const dragOptions = computed(() => {
 });
 
 const store = useStore(key);
+
+const retardScale = computed(() => store.state.retardScale);
+const retardScaleKey = computed(() => retardScale.value.toFixed(2));
 
 const title = computed(() => {
   const currentTitle = titles[Math.floor(Math.random() * titles.length)];
