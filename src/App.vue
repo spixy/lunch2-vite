@@ -10,9 +10,9 @@
     >
       <marquee
         v-if="store.state.retardMode"
+        :key="retardScaleKey"
         behavior="alternate"
         :scrollamount="20 * retardScale"
-        :key="retardScaleKey"
       >
         {{ title }}
       </marquee>
