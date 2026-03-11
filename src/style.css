@@ -1,3 +1,8 @@
 #lunchinator {
-  font-family: 'Dancing Script', cursive;
+  font-family: "Dancing Script", cursive;
+}
+
+.menu-card {
+  min-width: 400px;
+  width: 400px !important;
 }

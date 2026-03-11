@@ -22,13 +22,13 @@ $secondary: #737378;
   --#{$prefix}soup-bg: #{$primary-dark};
 }
 
-$card-cap-bg: rgba(var(--#{$prefix}custom-card-cap-bg), .6);
+$card-cap-bg: rgba(var(--#{$prefix}custom-card-cap-bg), 0.6);
 $pagination-active-bg: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 $pagination-active-border-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 $pagination-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 $pagination-hover-color: var(--#{prefix}card-cap-color);
 $form-check-input-checked-bg-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
-$form-check-input-checked-border-color: rgba(var(--#{$prefix}custom-card-cap-bg), .5);
+$form-check-input-checked-border-color: rgba(var(--#{$prefix}custom-card-cap-bg), 0.5);
 $form-check-input-bg: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 
 // set changes

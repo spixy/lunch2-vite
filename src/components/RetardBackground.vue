@@ -1,15 +1,31 @@
 <template>
-  <div v-if="store.state.retardMode" class="retard-background">
-    <div v-for="(img, index) in selectedImages" :key="index" class="image-container" :style="containerStyles[index]">
-      <marquee :behavior="behaviors[index % behaviors.length]"
-               :direction="horizontalDirections[index % horizontalDirections.length]"
-               :scrollamount="scrollAmounts[index % scrollAmounts.length]"
-               class="floating-marquee-horizontal">
-        <marquee :behavior="behaviors[(index + 1) % behaviors.length]"
-                 :direction="verticalDirections[index % verticalDirections.length]"
-                 :scrollamount="scrollAmounts[(index + 1) % scrollAmounts.length]"
-                 class="floating-marquee-vertical">
-          <img :src="img" class="floating-img" :class="{ 'spinning': spinningIndex === index }" />
+  <div
+    v-if="store.state.retardMode"
+    class="retard-background"
+  >
+    <div
+      v-for="(img, index) in selectedImages"
+      :key="index"
+      class="image-container"
+      :style="containerStyles[index]"
+    >
+      <marquee
+        :behavior="behaviors[index % behaviors.length]"
+        :direction="horizontalDirections[index % horizontalDirections.length]"
+        :scrollamount="scrollAmounts[index % scrollAmounts.length]"
+        class="floating-marquee-horizontal"
+      >
+        <marquee
+          :behavior="behaviors[(index + 1) % behaviors.length]"
+          :direction="verticalDirections[index % verticalDirections.length]"
+          :scrollamount="scrollAmounts[(index + 1) % scrollAmounts.length]"
+          class="floating-marquee-vertical"
+        >
+          <img
+            :src="img"
+            class="floating-img"
+            :class="{ spinning: spinningIndex === index }"
+          />
         </marquee>
       </marquee>
     </div>
@@ -17,23 +33,26 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex';
-import { key } from '../store';
-import { ref, onMounted, watch, onUnmounted } from 'vue';
+import { useStore } from "vuex";
+import { key } from "../store";
+import { ref, onMounted, watch, onUnmounted } from "vue";
 
 const store = useStore(key);
 const selectedImages = ref<string[]>([]);
 const spinningIndex = ref<number | null>(null);
-const containerStyles = ref<any[]>([]);
-let chaosInterval: any = null;
+const containerStyles = ref<{ top: string }[]>([]);
+let chaosInterval: ReturnType<typeof setInterval> | null = null;
 
 // Get all jpg images from the assets folder
-const images = import.meta.glob('../assets/retard-images/*.jpg', { eager: true, as: 'url' });
+const images = import.meta.glob("../assets/retard-images/*.jpg", {
+  eager: true,
+  as: "url",
+});
 const imagePaths = Object.values(images);
 
-const behaviors = ['alternate', 'scroll'];
-const horizontalDirections = ['left', 'right'];
-const verticalDirections = ['up', 'down'];
+const behaviors = ["alternate", "scroll"];
+const horizontalDirections = ["left", "right"];
+const verticalDirections = ["up", "down"];
 const scrollAmounts = [10, 15, 20, 25, 30, 35];
 
 const selectRandomImages = () => {
@@ -44,7 +63,7 @@ const selectRandomImages = () => {
 
   // Randomize starting top positions for containers to cover more screen height
   containerStyles.value = selectedImages.value.map(() => ({
-    top: Math.random() * 60 + 'vh'
+    top: Math.random() * 60 + "vh",
   }));
 };
 
@@ -87,14 +106,17 @@ onUnmounted(() => {
 });
 
 // Re-select images when retard mode is toggled to make it more "random" each time
-watch(() => store.state.retardMode, (newVal) => {
-  if (newVal) {
-    selectRandomImages();
-    startChaosLogic();
-  } else {
-    stopChaosLogic();
-  }
-});
+watch(
+  () => store.state.retardMode,
+  (newVal) => {
+    if (newVal) {
+      selectRandomImages();
+      startChaosLogic();
+    } else {
+      stopChaosLogic();
+    }
+  },
+);
 </script>
 
 <style scoped>
@@ -137,7 +159,11 @@ watch(() => store.state.retardMode, (newVal) => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

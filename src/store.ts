@@ -1,61 +1,96 @@
 import { InjectionKey } from "vue";
-import { createStore, Store } from 'vuex';
+import { createStore, Store } from "vuex";
+
+export type SavedRestaurant = {
+  id: number;
+  index: number;
+  isHidden: boolean;
+};
 
 export interface State {
-    darkTheme: boolean
-    retardMode: boolean
-    restaurantOrder: Map<number, number>
+  darkTheme: boolean;
+  retardMode: boolean;
+  restaurantOrder: SavedRestaurant[];
 }
 
 export const key: InjectionKey<Store<State>> = Symbol();
 
-const restaurantOrderFromLocalStorage = (order: string | null): Map<number, number> => {
-    const map = new Map<number, number>();
-    if (!order) {
-        return map;
+const restaurantOrderFromLocalStorage = (order: string | null): SavedRestaurant[] => {
+  if (!order) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(order);
+    if (!Array.isArray(parsed)) {
+      return [];
     }
-    const entries = order.split(',');
-    for (let i = 0; i < entries.length; i += 2) {
-        const key = parseInt(entries[i]);
-        const value = parseInt(entries[i + 1]);
-        map.set(key, value);
-    }
-    return map;
-}
+    return parsed.map((item: Partial<SavedRestaurant>, index: number) => ({
+      id: typeof item.id === "number" ? item.id : -1,
+      index: typeof item.index === "number" ? item.index : typeof index === "number" ? index : 0,
+      isHidden: typeof item.isHidden === "boolean" ? item.isHidden : false,
+    }));
+  } catch {
+    return [];
+  }
+};
 
-const storeRestaurantOrder = (order: Map<number, number>): void => {
-    let resultString = "";
-    for (const [key, value] of order.entries()) {
-        resultString += key.toString() + "," + value.toString() + ","
-    }
-    resultString = resultString.substring(0, resultString.length - 1);
-    window.localStorage.setItem("restaurantOrder", resultString);
-}
+const storeRestaurantOrder = (order: SavedRestaurant[]): void => {
+  globalThis.localStorage.setItem("restaurantOrder", JSON.stringify(order));
+};
 
 export const store = createStore<State>({
-    state: {
-        darkTheme: window.localStorage.getItem("darkTheme") === "true" ?? false,
-        retardMode: window.localStorage.getItem("retardMode") === "true" ?? false,
-        restaurantOrder: restaurantOrderFromLocalStorage(window.localStorage.getItem("restaurantOrder"))
+  state: {
+    darkTheme: globalThis.localStorage.getItem("darkTheme") === "true" || false,
+    retardMode: globalThis.localStorage.getItem("retardMode") === "true" || false,
+    restaurantOrder: restaurantOrderFromLocalStorage(globalThis.localStorage.getItem("restaurantOrder")),
+  },
+  mutations: {
+    toggleDarkTheme(state: State) {
+      state.darkTheme = !state.darkTheme;
+      globalThis.localStorage.setItem("darkTheme", state.darkTheme ? "true" : "false");
     },
-    mutations: {
-        toggleDarkTheme(state: State) {
-            state.darkTheme = !state.darkTheme;
-            window.localStorage.setItem("darkTheme", state.darkTheme ? "true" : "false");
-        },
-        toggleRetardMode(state: State) {
-            state.retardMode = !state.retardMode;
-            window.localStorage.setItem("retardMode", state.retardMode ? "true" : "false");
-        },
-        updateRestaurantOrder(state: State, payload: { id: number, newIndex: number, oldIndex: number, swapId: number }) {
-            const { id, newIndex, oldIndex, swapId } = payload;
-            state.restaurantOrder.set(swapId, oldIndex!);
-            state.restaurantOrder.set(id, newIndex);
-            storeRestaurantOrder(state.restaurantOrder);
-        },
-        setRestaurantOrder(state: State, payload: Map<number, number>) {
-            state.restaurantOrder = payload
-            storeRestaurantOrder(state.restaurantOrder);
-        }
-    }
-})
+    toggleRetardMode(state: State) {
+      state.retardMode = !state.retardMode;
+      globalThis.localStorage.setItem("retardMode", state.retardMode ? "true" : "false");
+    },
+    updateRestaurantOrder(
+      state: State,
+      payload: {
+        id: number;
+        newIndex: number;
+        oldIndex: number;
+        swapId: number;
+      },
+    ) {
+      const { id, newIndex, oldIndex, swapId } = payload;
+      const target = state.restaurantOrder.find((item) => item.id === id);
+      const swapTarget = state.restaurantOrder.find((item) => item.id === swapId);
+      if (!target || !swapTarget) {
+        return;
+      }
+      target.index = newIndex;
+      swapTarget.index = oldIndex;
+      storeRestaurantOrder(state.restaurantOrder);
+    },
+    setRestaurantOrder(state: State, payload: SavedRestaurant[]) {
+      state.restaurantOrder = payload;
+      storeRestaurantOrder(state.restaurantOrder);
+    },
+    setRestaurantHidden(state: State, id: number) {
+      const target = state.restaurantOrder.find((item) => item.id === id);
+      if (!target) {
+        return;
+      }
+      target.isHidden = true;
+      storeRestaurantOrder(state.restaurantOrder);
+    },
+    setRestaurantVisible(state: State, id: number) {
+      const target = state.restaurantOrder.find((item) => item.id === id);
+      if (!target) {
+        return;
+      }
+      target.isHidden = false;
+      storeRestaurantOrder(state.restaurantOrder);
+    },
+  },
+});
