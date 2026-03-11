@@ -102,5 +102,13 @@ export const store = createStore<State>({
       target.isHidden = true;
       storeRestaurantOrder(state.restaurantOrder);
     },
+    setRestaurantVisible(state: State, id: number) {
+      const target = state.restaurantOrder.find((item) => item.id === id);
+      if (!target) {
+        return;
+      }
+      target.isHidden = false;
+      storeRestaurantOrder(state.restaurantOrder);
+    },
   },
 });

@@ -22,7 +22,7 @@
   </div>
   <div class="p-4">
     <div class="row">
-      <div class="col col-11">
+      <div class="col col-10">
         <DaySelection
           :selected="selectedDay"
           :update-func="getRestaurantsForDay"
@@ -31,6 +31,7 @@
       <div class="col col-2 col-md-1">
         <ThemeSelector />
         <RetardSelector />
+        <HiddenMenusDialog :menus="menus" />
       </div>
     </div>
     <Draggable
@@ -62,6 +63,7 @@ import { key, type SavedRestaurant } from "./store";
 import RetardSelector from "./components/RetardSelector.vue";
 import RetardBackground from "./components/RetardBackground.vue";
 import Draggable from "vuedraggable";
+import HiddenMenusDialog from "./components/HiddenMenusDialog.vue";
 
 const titles = [
   "Hop Hop",
@@ -199,9 +201,7 @@ const sortRestaurantDays = (restaurants: RestaurantDay[]): RestaurantDay[] => {
   const getIndex = (id: number): number =>
     store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
 
-  return [...restaurants].sort(
-    (a, b) => getIndex(a.id) - getIndex(b.id),
-  );
+  return [...restaurants].sort((a, b) => getIndex(a.id) - getIndex(b.id));
 };
 
 const getRestaurantsForDay = async (day: number) => {
@@ -264,6 +264,7 @@ const onDragEnd = () => {
     color: #0000ff;
   }
 }
+
 </style>
 
 <style lang="scss">
