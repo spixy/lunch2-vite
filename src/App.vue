@@ -38,6 +38,7 @@
       <div class="col col-2 col-md-1">
         <ThemeSelector />
         <RetardSelector />
+        <FilipSelector />
       </div>
     </div>
     <Draggable
@@ -71,6 +72,7 @@ import RetardBackground from "./components/RetardBackground.vue";
 import Draggable from "vuedraggable";
 import HiddenMenusDialog from "./components/HiddenMenusDialog.vue";
 import RetardScale from "./components/RetardScale.vue";
+import FilipSelector from "./components/FilipSelector.vue";
 
 const titles = [
   "Hop Hop",
@@ -201,10 +203,19 @@ const sortRestaurantDays = (restaurants: RestaurantDay[]): RestaurantDay[] => {
 
 const getRestaurantsForDay = async (day: number) => {
   selectedDay.value = day;
-  const response: Restaurant[] = await fetch(`${baseUrl}/get?day=${days[day]}`).then((response) => response.json());
+  let response: Restaurant[] = await fetch(`${baseUrl}/get?day=${days[day]}`).then((response) => response.json());
+  if (store.state.filipMode) {
+    response = response.filter((res) => res.restaurant === "Padagali");
+  }
   updateRestaurantOrder(response);
   menus.value = sortRestaurantDays(restaurantToRestaurantDay(response));
 };
+
+store.subscribe((mutation) => {
+  if (mutation.type === "toggleFilipMode" || mutation.type === "toggleRetardMode") {
+    getRestaurantsForDay(selectedDay.value);
+  }
+});
 
 getRestaurantsForDay(selectedDay.value);
 

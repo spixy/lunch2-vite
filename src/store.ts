@@ -10,6 +10,7 @@ export type SavedRestaurant = {
 export interface State {
   darkTheme: boolean;
   retardMode: boolean;
+  filipMode: boolean;
   retardScale: number;
   restaurantOrder: SavedRestaurant[];
 }
@@ -43,6 +44,7 @@ export const store = createStore<State>({
   state: {
     darkTheme: globalThis.localStorage.getItem("darkTheme") === "true" || false,
     retardMode: globalThis.localStorage.getItem("retardMode") === "true" || false,
+    filipMode: globalThis.localStorage.getItem("filipMode") === "true" || false,
     retardScale: (() => {
       const value = globalThis.localStorage.getItem("retardScale");
       if (value === null) {
@@ -59,6 +61,10 @@ export const store = createStore<State>({
     },
     toggleRetardMode(state: State) {
       state.retardMode = !state.retardMode;
+      if (state.retardMode) {
+        state.filipMode = false;
+        globalThis.localStorage.setItem("filipMode", "false");
+      }
       globalThis.localStorage.setItem("retardMode", state.retardMode ? "true" : "false");
     },
     setRetardScale(state: State, value: number) {
@@ -103,6 +109,14 @@ export const store = createStore<State>({
       }
       target.isHidden = false;
       storeRestaurantOrder(state.restaurantOrder);
+    },
+    toggleFilipMode(state: State) {
+      state.filipMode = !state.filipMode;
+      if (state.filipMode) {
+        state.retardMode = false;
+        globalThis.localStorage.setItem("retardMode", "false");
+      }
+      globalThis.localStorage.setItem("filipMode", state.filipMode ? "true" : "false");
     },
   },
 });
