@@ -71,9 +71,7 @@ const startChaosLogic = () => {
   stopChaosLogic();
   chaosInterval = setInterval(() => {
     // 1. Spin one random image
-    spinningIndex.value = Math.floor(
-      Math.random() * selectedImages.value.length,
-    );
+    spinningIndex.value = Math.floor(Math.random() * selectedImages.value.length);
     setTimeout(() => {
       spinningIndex.value = null;
     }, 2000); // Spin for 2 seconds
@@ -82,8 +80,7 @@ const startChaosLogic = () => {
     if (imagePaths.length > 0) {
       const newImages = [...selectedImages.value];
       for (let i = 0; i < newImages.length; i++) {
-        newImages[i] =
-          imagePaths[Math.floor(Math.random() * imagePaths.length)];
+        newImages[i] = imagePaths[Math.floor(Math.random() * imagePaths.length)];
       }
       selectedImages.value = newImages;
     }

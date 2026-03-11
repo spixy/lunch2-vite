@@ -15,9 +15,7 @@ export interface State {
 
 export const key: InjectionKey<Store<State>> = Symbol();
 
-const restaurantOrderFromLocalStorage = (
-  order: string | null,
-): SavedRestaurant[] => {
+const restaurantOrderFromLocalStorage = (order: string | null): SavedRestaurant[] => {
   if (!order) {
     return [];
   }
@@ -28,12 +26,7 @@ const restaurantOrderFromLocalStorage = (
     }
     return parsed.map((item: Partial<SavedRestaurant>, index: number) => ({
       id: typeof item.id === "number" ? item.id : -1,
-      index:
-        typeof item.index === "number"
-          ? item.index
-          : typeof index === "number"
-            ? index
-            : 0,
+      index: typeof item.index === "number" ? item.index : typeof index === "number" ? index : 0,
       isHidden: typeof item.isHidden === "boolean" ? item.isHidden : false,
     }));
   } catch {
@@ -48,26 +41,17 @@ const storeRestaurantOrder = (order: SavedRestaurant[]): void => {
 export const store = createStore<State>({
   state: {
     darkTheme: globalThis.localStorage.getItem("darkTheme") === "true" || false,
-    retardMode:
-      globalThis.localStorage.getItem("retardMode") === "true" || false,
-    restaurantOrder: restaurantOrderFromLocalStorage(
-      globalThis.localStorage.getItem("restaurantOrder"),
-    ),
+    retardMode: globalThis.localStorage.getItem("retardMode") === "true" || false,
+    restaurantOrder: restaurantOrderFromLocalStorage(globalThis.localStorage.getItem("restaurantOrder")),
   },
   mutations: {
     toggleDarkTheme(state: State) {
       state.darkTheme = !state.darkTheme;
-      globalThis.localStorage.setItem(
-        "darkTheme",
-        state.darkTheme ? "true" : "false",
-      );
+      globalThis.localStorage.setItem("darkTheme", state.darkTheme ? "true" : "false");
     },
     toggleRetardMode(state: State) {
       state.retardMode = !state.retardMode;
-      globalThis.localStorage.setItem(
-        "retardMode",
-        state.retardMode ? "true" : "false",
-      );
+      globalThis.localStorage.setItem("retardMode", state.retardMode ? "true" : "false");
     },
     updateRestaurantOrder(
       state: State,
@@ -80,9 +64,7 @@ export const store = createStore<State>({
     ) {
       const { id, newIndex, oldIndex, swapId } = payload;
       const target = state.restaurantOrder.find((item) => item.id === id);
-      const swapTarget = state.restaurantOrder.find(
-        (item) => item.id === swapId,
-      );
+      const swapTarget = state.restaurantOrder.find((item) => item.id === swapId);
       if (!target || !swapTarget) {
         return;
       }

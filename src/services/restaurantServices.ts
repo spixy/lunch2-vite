@@ -9,9 +9,7 @@ const noDataMeals: Meal[] = [
   },
 ];
 
-export const restaurantToRestaurantDay = (
-  data: Restaurant[],
-): RestaurantDay[] => {
+export const restaurantToRestaurantDay = (data: Restaurant[]): RestaurantDay[] => {
   const result = [];
   for (const restaurant of data) {
     result.push({
@@ -19,8 +17,7 @@ export const restaurantToRestaurantDay = (
       restaurant: restaurant.restaurant,
       url: restaurant.url,
       meals:
-        restaurant.dailymenus[0].meals.length == 0 &&
-        restaurant.permanentmeals.length == 0
+        restaurant.dailymenus[0].meals.length == 0 && restaurant.permanentmeals.length == 0
           ? noDataMeals
           : restaurant.dailymenus[0].meals,
       permanentmeals: restaurant.permanentmeals ?? [],

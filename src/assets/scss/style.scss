@@ -27,14 +27,8 @@ $pagination-active-bg: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 $pagination-active-border-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 $pagination-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 $pagination-hover-color: var(--#{prefix}card-cap-color);
-$form-check-input-checked-bg-color: rgba(
-  var(--#{$prefix}custom-card-cap-bg),
-  1
-);
-$form-check-input-checked-border-color: rgba(
-  var(--#{$prefix}custom-card-cap-bg),
-  0.5
-);
+$form-check-input-checked-bg-color: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
+$form-check-input-checked-border-color: rgba(var(--#{$prefix}custom-card-cap-bg), 0.5);
 $form-check-input-bg: rgba(var(--#{$prefix}custom-card-cap-bg), 1);
 
 // set changes

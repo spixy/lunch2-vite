@@ -84,15 +84,7 @@ const titles = [
 ];
 const menus: Ref<RestaurantDay[]> = ref([]);
 const selectedDay: Ref<number> = ref(new Date().getDay());
-const days = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-];
+const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const baseUrl = import.meta.env.VITE_API_URL;
 const drag = ref(false);
 const dragOptions = computed(() => {
@@ -123,10 +115,7 @@ const title = computed(() => {
 
 onMounted(() => {
   //document.querySelector("html")!.setAttribute('data-bs-theme', 'light');
-  document.body.setAttribute(
-    "data-bs-theme",
-    store.state.darkTheme ? "dark" : "light",
-  );
+  document.body.setAttribute("data-bs-theme", store.state.darkTheme ? "dark" : "light");
 });
 
 const getRestaurantIndex = (id: number): number | undefined => {
@@ -138,10 +127,7 @@ const getRestaurantIdByIndex = (index: number): number | undefined => {
 };
 
 const isRestaurantHidden = (id: number): boolean => {
-  return (
-    store.state.restaurantOrder.find((item) => item.id === id)?.isHidden ??
-    false
-  );
+  return store.state.restaurantOrder.find((item) => item.id === id)?.isHidden ?? false;
 };
 
 const swapRestaurants = (id: number, direction: Direction) => {
@@ -198,17 +184,14 @@ const updateRestaurantOrder = (restaurants: Restaurant[]) => {
 };
 
 const sortRestaurantDays = (restaurants: RestaurantDay[]): RestaurantDay[] => {
-  const getIndex = (id: number): number =>
-    store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
+  const getIndex = (id: number): number => store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
 
   return [...restaurants].sort((a, b) => getIndex(a.id) - getIndex(b.id));
 };
 
 const getRestaurantsForDay = async (day: number) => {
   selectedDay.value = day;
-  const response: Restaurant[] = await fetch(
-    `${baseUrl}/get?day=${days[day]}`,
-  ).then((response) => response.json());
+  const response: Restaurant[] = await fetch(`${baseUrl}/get?day=${days[day]}`).then((response) => response.json());
   updateRestaurantOrder(response);
   menus.value = sortRestaurantDays(restaurantToRestaurantDay(response));
 };
@@ -217,18 +200,14 @@ getRestaurantsForDay(selectedDay.value);
 
 const onDragEnd = () => {
   drag.value = false;
-  const newRestaurantOrder: SavedRestaurant[] = menus.value.map(
-    ({ id }, index) => {
-      const existing = store.state.restaurantOrder.find(
-        (item) => item.id === id,
-      );
-      return {
-        id,
-        index,
-        isHidden: existing?.isHidden ?? false,
-      };
-    },
-  );
+  const newRestaurantOrder: SavedRestaurant[] = menus.value.map(({ id }, index) => {
+    const existing = store.state.restaurantOrder.find((item) => item.id === id);
+    return {
+      id,
+      index,
+      isHidden: existing?.isHidden ?? false,
+    };
+  });
   store.commit("setRestaurantOrder", newRestaurantOrder);
 };
 </script>
@@ -264,7 +243,6 @@ const onDragEnd = () => {
     color: #0000ff;
   }
 }
-
 </style>
 
 <style lang="scss">

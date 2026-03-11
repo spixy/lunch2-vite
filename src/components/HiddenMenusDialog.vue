@@ -13,9 +13,7 @@
     >
       <div class="hidden-modal-dialog">
         <div class="hidden-modal-header">
-          <h5 class="mb-0">
-            Hidden restaurants
-          </h5>
+          <h5 class="mb-0">Hidden restaurants</h5>
           <button
             type="button"
             class="btn-close"
@@ -24,9 +22,7 @@
           />
         </div>
         <div class="hidden-modal-body">
-          <div v-if="hiddenRestaurants.length === 0">
-            No hidden restaurants.
-          </div>
+          <div v-if="hiddenRestaurants.length === 0">No hidden restaurants.</div>
           <ul
             v-else
             class="list-group"
@@ -88,15 +84,10 @@ const hideButtonClass = computed(() => {
 });
 
 const isRestaurantHidden = (id: number): boolean => {
-  return (
-    store.state.restaurantOrder.find((item) => item.id === id)?.isHidden ??
-    false
-  );
+  return store.state.restaurantOrder.find((item) => item.id === id)?.isHidden ?? false;
 };
 
-const hiddenRestaurants = computed(() =>
-  props.menus.filter((restaurant) => isRestaurantHidden(restaurant.id)),
-);
+const hiddenRestaurants = computed(() => props.menus.filter((restaurant) => isRestaurantHidden(restaurant.id)));
 
 const unhideRestaurant = (id: number) => {
   store.commit("setRestaurantVisible", id);
@@ -151,4 +142,3 @@ const unhideRestaurant = (id: number) => {
   color: black;
 }
 </style>
-

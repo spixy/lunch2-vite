@@ -11,9 +11,7 @@
     <label
       class="form-check-label"
       :style="{
-        color: store.state.darkTheme
-          ? 'var(--bs-body-color)'
-          : 'var(--bs-primary)',
+        color: store.state.darkTheme ? 'var(--bs-body-color)' : 'var(--bs-primary)',
       }"
       for="flexSwitchCheckChecked"
     >
