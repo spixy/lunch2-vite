@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="store.state.retardMode"
+    v-if="store.state.retardMode || store.state.filipMode"
     class="retard-background"
   >
     <div
@@ -44,11 +44,24 @@ const containerStyles = ref<{ top: string }[]>([]);
 let chaosInterval: ReturnType<typeof setInterval> | null = null;
 
 // Get all jpg images from the assets folder
-const images = import.meta.glob("../assets/retard-images/*.jpg", {
+const retardImagesGlob = import.meta.glob("../assets/retard-images/*.jpg", {
   eager: true,
   as: "url",
 });
-const imagePaths = Object.values(images);
+const filipImagesGlob = import.meta.glob("../assets/filip-images/*.jpg", {
+  eager: true,
+  as: "url",
+});
+
+const retardImagePaths = Object.values(retardImagesGlob);
+const filipImagePaths = Object.values(filipImagesGlob);
+
+const imagePaths = computed(() => {
+  if (store.state.filipMode) {
+    return filipImagePaths;
+  }
+  return retardImagePaths;
+});
 
 const behaviors = ["alternate", "scroll"];
 const horizontalDirections = ["left", "right"];
@@ -61,10 +74,11 @@ const retardScaleKey = computed(() => retardScale.value.toFixed(2));
 const scaledScrollAmount = (index: number) => scrollAmounts[index % scrollAmounts.length] * retardScale.value;
 
 const selectRandomImages = () => {
-  if (imagePaths.length === 0) return;
+  if (imagePaths.value.length === 0) return;
 
-  const shuffled = [...imagePaths].sort(() => 0.5 - Math.random());
-  selectedImages.value = shuffled.slice(0, 2);
+  const shuffled = [...imagePaths.value].sort(() => 0.5 - Math.random());
+  const limit = store.state.filipMode ? 4 : 2;
+  selectedImages.value = shuffled.slice(0, limit);
 
   // Randomize starting top positions for containers to cover more screen height
   containerStyles.value = selectedImages.value.map(() => ({
@@ -82,10 +96,10 @@ const startChaosLogic = () => {
     }, 2000); // Spin for 2 seconds
 
     // 2. Change images every 5 seconds
-    if (imagePaths.length > 0) {
+    if (imagePaths.value.length > 0) {
       const newImages = [...selectedImages.value];
       for (let i = 0; i < newImages.length; i++) {
-        newImages[i] = imagePaths[Math.floor(Math.random() * imagePaths.length)];
+        newImages[i] = imagePaths.value[Math.floor(Math.random() * imagePaths.value.length)];
       }
       selectedImages.value = newImages;
     }
@@ -101,7 +115,7 @@ const stopChaosLogic = () => {
 
 onMounted(() => {
   selectRandomImages();
-  if (store.state.retardMode) {
+  if (store.state.retardMode || store.state.filipMode) {
     startChaosLogic();
   }
 });
@@ -118,7 +132,25 @@ watch(
       selectRandomImages();
       startChaosLogic();
     } else {
-      stopChaosLogic();
+      if (!store.state.filipMode) {
+        stopChaosLogic();
+      }
+    }
+  },
+);
+
+watch(
+  () => store.state.filipMode,
+  (newVal) => {
+    if (newVal) {
+      selectRandomImages();
+      startChaosLogic();
+    } else {
+      if (!store.state.retardMode) {
+        stopChaosLogic();
+      } else {
+        selectRandomImages();
+      }
     }
   },
 );
