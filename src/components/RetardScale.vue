@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="store.state.retardMode"
+    v-if="store.state.retardMode || store.state.filipMode"
     class="mt-2"
   >
     <input
@@ -11,7 +11,7 @@
       step="0.5"
       class="form-range"
     />
-    <label class="form-label mb-1"> Retard scale: {{ retardScale }} </label>
+    <label class="form-label mb-1"> {{ store.state.filipMode ? 'Filip scale' : 'Retard scale' }}: {{ retardScale }} </label>
   </div>
 </template>
 

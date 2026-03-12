@@ -6,10 +6,10 @@
   >
     <h1
       class="text-center"
-      :class="{ 'retard-bounce': store.state.retardMode }"
+      :class="{ 'retard-bounce': store.state.retardMode || store.state.filipMode }"
     >
       <marquee
-        v-if="store.state.retardMode"
+        v-if="store.state.retardMode || store.state.filipMode"
         :key="retardScaleKey"
         behavior="alternate"
         :scrollamount="20 * retardScale"

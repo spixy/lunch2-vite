@@ -36,12 +36,18 @@
 import { useStore } from "vuex";
 import { key } from "../store";
 import { ref, onMounted, watch, onUnmounted, computed } from "vue";
+import penzionAudio from "../assets/audio/penzion.mp3";
+import panjabiAudio from "../assets/audio/panjabi.mp3";
 
 const store = useStore(key);
 const selectedImages = ref<string[]>([]);
 const spinningIndex = ref<number | null>(null);
 const containerStyles = ref<{ top: string }[]>([]);
 let chaosInterval: ReturnType<typeof setInterval> | null = null;
+const audio = new Audio(penzionAudio);
+audio.loop = true;
+const audioFilip = new Audio(panjabiAudio);
+audioFilip.loop = true;
 
 // Get all jpg images from the assets folder
 const retardImagesGlob = import.meta.glob("../assets/retard-images/*.jpg", {
@@ -118,10 +124,20 @@ onMounted(() => {
   if (store.state.retardMode || store.state.filipMode) {
     startChaosLogic();
   }
+  if (store.state.retardMode) {
+    audio.playbackRate = retardScale.value;
+    audio.play().catch((e) => console.log("Audio play failed:", e));
+  }
+  if (store.state.filipMode) {
+    audioFilip.playbackRate = retardScale.value;
+    audioFilip.play().catch((e) => console.log("Audio play failed:", e));
+  }
 });
 
 onUnmounted(() => {
   stopChaosLogic();
+  audio.pause();
+  audioFilip.pause();
 });
 
 // Re-select images when retard mode is toggled to make it more "random" each time
@@ -131,11 +147,22 @@ watch(
     if (newVal) {
       selectRandomImages();
       startChaosLogic();
+      audio.playbackRate = retardScale.value;
+      audio.play().catch((e) => console.log("Audio play failed:", e));
     } else {
+      audio.pause();
       if (!store.state.filipMode) {
         stopChaosLogic();
       }
     }
+  },
+);
+
+watch(
+  () => retardScale.value,
+  (newVal) => {
+    audio.playbackRate = newVal;
+    audioFilip.playbackRate = newVal;
   },
 );
 
@@ -145,7 +172,10 @@ watch(
     if (newVal) {
       selectRandomImages();
       startChaosLogic();
+      audioFilip.playbackRate = retardScale.value;
+      audioFilip.play().catch((e) => console.log("Audio play failed:", e));
     } else {
+      audioFilip.pause();
       if (!store.state.retardMode) {
         stopChaosLogic();
       } else {
