@@ -2,6 +2,7 @@
   <div
     v-if="store.state.retardMode || store.state.filipMode"
     class="retard-background"
+    :class="{ 'flashing': store.state.backgroundFlashing }"
   >
     <div
       v-for="(img, index) in selectedImages"
@@ -197,6 +198,29 @@ watch(
   pointer-events: none;
   overflow: hidden;
   opacity: 0.5;
+}
+
+.flashing {
+  animation: retard-bounce 0.5s infinite linear;
+  opacity: 1;
+}
+
+@keyframes retard-bounce {
+  0% {
+    background-color: #ff0000;
+  }
+  25% {
+    background-color: #ffff00;
+  }
+  50% {
+    background-color: #00ff00;
+  }
+  75% {
+    background-color: #00ffff;
+  }
+  100% {
+    background-color: #0000ff;
+  }
 }
 
 .image-container {

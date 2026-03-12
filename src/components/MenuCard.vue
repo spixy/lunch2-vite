@@ -1,6 +1,15 @@
 <template>
-  <div class="col pt-4 menu-card">
+  <div
+    class="col pt-4 menu-card"
+    :class="{ 'spinning': isHiding }"
+  >
     <div class="card h-100">
+      <img
+        v-if="isHiding"
+        src="../assets/retard-images/no-scope/bulletExplosion.png"
+        class="bullet-explosion"
+        alt="Explosion"
+      />
       <div class="card-header">
         <div class="row align-items-center p-2">
           <a
@@ -129,7 +138,7 @@
 
 <script setup lang="ts">
 import * as bootstrap from "bootstrap";
-import { onMounted, onUpdated } from "vue";
+import { onMounted, onUpdated, ref } from "vue";
 import { Direction, RestaurantDay } from "../types/Restaurant.ts";
 import { useStore } from "vuex";
 import { key } from "../store.ts";
@@ -143,11 +152,37 @@ defineProps<{
 }>();
 let tooltips: bootstrap.Tooltip[] = [];
 
+const isHiding = ref(false);
+
 const getRestaurantIndex = (id: number): number =>
   store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
 
 const hideRestaurant = (id: number): void => {
-  store.commit("setRestaurantHidden", id);
+  if (!store.state.retardMode) {
+    store.commit("setRestaurantHidden", id);
+    return;
+  }
+
+  store.commit("setAwpVisible", false);
+  const corners = ["top-left", "top-right", "bottom-left", "bottom-right"];
+  const randomCorner = corners[Math.floor(Math.random() * corners.length)];
+  store.commit("setAwpCorner", randomCorner);
+  setTimeout(() => {
+    store.commit("setAwpVisible", true);
+  }, 0);
+
+  setTimeout(() => {
+    isHiding.value = true;
+    store.commit("setBackgroundFlashing", true);
+    setTimeout(() => {
+      store.commit("setRestaurantHidden", id);
+      isHiding.value = false;
+      setTimeout(() => {
+        store.commit("setAwpVisible", false);
+        store.commit("setBackgroundFlashing", false);
+      }, 1000); // 1s wait + 0.5s spin + 1.0s spin back = 2.5s total
+    }, 1000); // Wait for the spin animation to finish (0.5s)
+  }, 1000); // Wait 1 second before starting the spin
 };
 
 onMounted(() => {
@@ -188,5 +223,32 @@ onUpdated(() => {
 
 .hide-toggle-btn:hover .icon-hide {
   display: inline-block;
+}
+
+.card.h-100 {
+  position: relative;
+}
+
+.bullet-explosion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(360deg) scale(0);
+  }
 }
 </style>

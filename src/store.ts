@@ -13,6 +13,9 @@ export interface State {
   filipMode: boolean;
   retardScale: number;
   restaurantOrder: SavedRestaurant[];
+  awpVisible: boolean;
+  awpCorner: string;
+  backgroundFlashing: boolean;
 }
 
 export const key: InjectionKey<Store<State>> = Symbol();
@@ -53,8 +56,20 @@ export const store = createStore<State>({
       return parseFloat(value);
     })(),
     restaurantOrder: restaurantOrderFromLocalStorage(globalThis.localStorage.getItem("restaurantOrder")),
+    awpVisible: false,
+    awpCorner: "bottom-left",
+    backgroundFlashing: false,
   },
   mutations: {
+    setAwpVisible(state: State, value: boolean) {
+      state.awpVisible = value;
+    },
+    setAwpCorner(state: State, corner: string) {
+      state.awpCorner = corner;
+    },
+    setBackgroundFlashing(state: State, value: boolean) {
+      state.backgroundFlashing = value;
+    },
     toggleDarkTheme(state: State) {
       state.darkTheme = !state.darkTheme;
       globalThis.localStorage.setItem("darkTheme", state.darkTheme ? "true" : "false");
