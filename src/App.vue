@@ -51,7 +51,6 @@
           <FilipSelector />
         </div>
       </div>
-
     </div>
     <Draggable
       v-model="menus"
