@@ -1,62 +1,18 @@
 <template>
   <RetardBackground />
-  <img
-    v-if="store.state.awpVisible && store.state.retardMode"
-    :key="Math.random()"
-    src="./assets/retard-images/no-scope/awp.png"
-    class="awp-animation"
-    :class="'corner-' + store.state.awpCorner"
-    alt="AWP"
-  />
-  <div
-    id="lunchinator"
-    class="pt-4"
-  >
-    <h1
-      class="text-center"
-      :class="{ 'retard-bounce': store.state.retardMode || store.state.filipMode }"
-    >
-      <marquee
-        v-if="store.state.retardMode || store.state.filipMode"
-        :key="retardScaleKey"
-        behavior="alternate"
-        :scrollamount="20 * retardScale"
-      >
-        {{ title }}
-      </marquee>
-      <template v-else>
-        {{ title }}
-      </template>
-    </h1>
-  </div>
+  <AwpOverlay />
+  <AppTitle />
   <div class="p-4">
-    <div class="controls-bar">
-      <div class="controls-bar__day">
-        <DaySelection
-          :selected="selectedDay"
-          :update-func="getRestaurantsForDay"
-        />
-      </div>
-      <div
-        v-if="store.state.retardMode || store.state.filipMode"
-        class="controls-bar__retard-scale"
-      >
-        <RetardScale />
-      </div>
-      <div class="controls-bar__actions">
-        <HiddenMenusDialog :menus="menus" />
-        <div class="controls-bar__selectors">
-          <ThemeSelector />
-          <RetardSelector />
-          <FilipSelector />
-        </div>
-      </div>
-    </div>
+    <ControlsBar
+      :menus="menus"
+      :selected-day="selectedDay"
+      :on-day-select="getRestaurantsForDay"
+    />
     <Draggable
       v-model="menus"
       v-bind="dragOptions"
-      @start="onDragStart"
-      @end="onDragEnd"
+      @start="onStart"
+      @end="onEnd"
     >
       <template #item="{ element }">
         <MenuCard
@@ -70,391 +26,30 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, onMounted, ref, computed } from "vue";
-import DaySelection from "./components/DaySelection.vue";
-import MenuCard from "./components/MenuCard.vue";
-import { Direction, Restaurant, RestaurantDay } from "./types/Restaurant";
-import { restaurantToRestaurantDay } from "./services/restaurantServices";
-import ThemeSelector from "./components/ThemeSelector.vue";
+import { onMounted } from "vue";
 import { useStore } from "vuex";
-import { key, type SavedRestaurant } from "./store";
-import RetardSelector from "./components/RetardSelector.vue";
-import RetardBackground from "./components/RetardBackground.vue";
+import { key } from "./store";
 import Draggable from "vuedraggable";
-import HiddenMenusDialog from "./components/HiddenMenusDialog.vue";
-import RetardScale from "./components/RetardScale.vue";
-import FilipSelector from "./components/FilipSelector.vue";
-
-const titles = [
-  "Hop Hop",
-  "Pomáhame si",
-  "bum bum to dělá",
-  "Teď se du vysrat, ale pořádne",
-  "tady je bubak ty ho nevidiš ale ja jo",
-  "- To jsou písmenka nebo čísla?",
-  "- To je kubatura, ale nevím co to je",
-  "- To udělali vaši lidi",
-  "Žádám aby to bylo řádně vyšetřeno",
-  "Zabiju se",
-  "Já mu trefim",
-  "a pivko na pni",
-  "televizia Markíza uvádzá {title}",
-  "V O L H A",
-  "- Pomoc",
-];
-const menus: Ref<RestaurantDay[]> = ref([]);
-const selectedDay: Ref<number> = ref(new Date().getDay());
-const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-const baseUrl = import.meta.env.VITE_API_URL;
-const drag = ref(false);
-const dragOptions = computed(() => {
-  return {
-    class: "row equal row-cols-1 justify-content-center",
-    animation: 200,
-    group: "description",
-    disabled: false,
-    ghostClass: "ghost",
-    itemKey: "id",
-    delay: 200,
-    delayOnTouchOnly: true,
-    touchStartThreshold: 4,
-    forceFallback: true,
-    componentData: {
-      tag: "ul",
-      type: "transition-group",
-      name: !drag.value ? "flip-list" : null,
-    },
-  };
-});
+import MenuCard from "./components/MenuCard.vue";
+import RetardBackground from "./components/RetardBackground.vue";
+import AwpOverlay from "./components/AwpOverlay.vue";
+import AppTitle from "./components/AppTitle.vue";
+import ControlsBar from "./components/ControlsBar.vue";
+import { useRestaurants } from "./composables/useRestaurants";
+import { useDraggable } from "./composables/useDraggable";
 
 const store = useStore(key);
 
-const retardScale = computed(() => store.state.retardScale);
-const retardScaleKey = computed(() => retardScale.value.toFixed(2));
-
-const title = computed(() => {
-  const currentTitle = titles[Math.floor(Math.random() * titles.length)];
-  if (currentTitle.includes("{title}")) {
-    return currentTitle.replace("{title}", "Lunchinator");
-  }
-  return "Lunchinator " + currentTitle;
-});
+const { menus, selectedDay, getRestaurantsForDay, swapRestaurants, isRestaurantHidden, saveOrderAfterDrag } =
+  useRestaurants();
+const { dragOptions, onStart, onEnd } = useDraggable(saveOrderAfterDrag);
 
 onMounted(() => {
-  //document.querySelector("html")!.setAttribute('data-bs-theme', 'light');
   document.body.setAttribute("data-bs-theme", store.state.darkTheme ? "dark" : "light");
 });
 
-const getRestaurantIndex = (id: number): number | undefined => {
-  return store.state.restaurantOrder.find((item) => item.id === id)?.index;
-};
-
-const getRestaurantIdByIndex = (index: number): number | undefined => {
-  return store.state.restaurantOrder.find((item) => item.index === index)?.id;
-};
-
-const isRestaurantHidden = (id: number): boolean => {
-  return store.state.restaurantOrder.find((item) => item.id === id)?.isHidden ?? false;
-};
-
-const swapRestaurants = (id: number, direction: Direction) => {
-  const oldIndex = getRestaurantIndex(id);
-  if (oldIndex === undefined || oldIndex === null) {
-    return;
-  }
-
-  const newIndex = oldIndex + (direction == Direction.LEFT ? -1 : 1);
-  if (newIndex < 0 || newIndex >= menus.value.length) {
-    return;
-  }
-
-  const swapId = getRestaurantIdByIndex(newIndex);
-  if (swapId === undefined) {
-    return;
-  }
-  const tmpRestaurant = menus.value[newIndex];
-  menus.value[newIndex] = menus.value[oldIndex];
-  menus.value[oldIndex] = tmpRestaurant;
-  store.commit("updateRestaurantOrder", {
-    id,
-    newIndex,
-    oldIndex,
-    swapId,
-  });
-};
-
-const updateRestaurantOrder = (restaurants: Restaurant[]) => {
-  const currentOrder: SavedRestaurant[] = [...store.state.restaurantOrder];
-
-  for (const restaurant of restaurants) {
-    const existing = currentOrder.find((item) => item.id === restaurant.id);
-    if (!existing) {
-      currentOrder.push({
-        id: restaurant.id,
-        index: currentOrder.length,
-        isHidden: false,
-      });
-    }
-  }
-
-  const restaurantIds = new Set(restaurants.map((res) => res.id));
-
-  const filteredOrder = currentOrder
-    .filter((item) => restaurantIds.has(item.id))
-    .sort((a, b) => a.index - b.index)
-    .map((item, index) => ({
-      ...item,
-      index,
-    }));
-
-  store.commit("setRestaurantOrder", filteredOrder);
-};
-
-const sortRestaurantDays = (restaurants: RestaurantDay[]): RestaurantDay[] => {
-  const getIndex = (id: number): number => store.state.restaurantOrder.find((item) => item.id === id)?.index ?? 0;
-
-  return [...restaurants].sort((a, b) => getIndex(a.id) - getIndex(b.id));
-};
-
-const getRestaurantsForDay = async (day: number) => {
-  selectedDay.value = day;
-  let response: Restaurant[] = await fetch(`${baseUrl}/get?day=${days[day]}`).then((response) => response.json());
-  if (store.state.filipMode) {
-    response = response.filter((res) => res.restaurant === "Padagali");
-  }
-  updateRestaurantOrder(response);
-  menus.value = sortRestaurantDays(restaurantToRestaurantDay(response));
-};
-
-store.subscribe((mutation) => {
-  if (mutation.type === "toggleFilipMode" || mutation.type === "toggleRetardMode") {
-    getRestaurantsForDay(selectedDay.value);
-  }
-});
-
 getRestaurantsForDay(selectedDay.value);
-
-const handleWheelDuringDrag = (e: WheelEvent) => {
-  window.scrollBy({ top: e.deltaY, behavior: "instant" as ScrollBehavior });
-};
-
-const onDragStart = () => {
-  drag.value = true;
-  window.addEventListener("wheel", handleWheelDuringDrag);
-};
-
-const onDragEnd = () => {
-  drag.value = false;
-  window.removeEventListener("wheel", handleWheelDuringDrag);
-  const newRestaurantOrder: SavedRestaurant[] = menus.value.map(({ id }, index) => {
-    const existing = store.state.restaurantOrder.find((item) => item.id === id);
-    return {
-      id,
-      index,
-      isHidden: existing?.isHidden ?? false,
-    };
-  });
-  store.commit("setRestaurantOrder", newRestaurantOrder);
-};
 </script>
-
-<style scoped>
-.controls-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.controls-bar__day {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.controls-bar__retard-scale {
-  width: 100%;
-}
-
-.controls-bar__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  justify-content: center;
-}
-
-@media (min-width: 768px) {
-  .controls-bar__actions {
-    width: auto;
-    justify-content: flex-start;
-  }
-}
-
-.controls-bar__selectors {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-}
-
-@media (min-width: 768px) {
-  .controls-bar__day {
-    flex: 1;
-    width: auto;
-    justify-content: flex-start;
-  }
-
-  .controls-bar__retard-scale {
-    width: auto;
-  }
-}
-
-.retard-bounce {
-  animation: retard-bounce 0.5s infinite linear;
-  display: block;
-}
-
-@keyframes retard-bounce {
-  0% {
-    transform: translateY(0) rotate(0deg) scale(1);
-    color: #ff0000;
-  }
-  25% {
-    color: #ffff00;
-    transform: translateY(-10px) rotate(-5deg) scale(1.1);
-  }
-  50% {
-    color: #00ff00;
-    transform: translateY(-20px) rotate(5deg) scale(1.2);
-    text-shadow:
-      2px 2px 10px #ff00ff,
-      -2px -2px 10px #00ffff;
-  }
-  75% {
-    color: #00ffff;
-    transform: translateY(-10px) rotate(-5deg) scale(1.1);
-  }
-  100% {
-    transform: translateY(0) rotate(0deg) scale(1);
-    color: #0000ff;
-  }
-}
-.awp-animation {
-  position: fixed;
-  z-index: 9999;
-  pointer-events: none;
-}
-
-.corner-top-left {
-  animation: from-top-left 2.5s forwards;
-}
-
-.corner-top-right {
-  animation: from-top-right 2.5s forwards;
-}
-
-.corner-bottom-left {
-  animation: from-bottom-left 2.5s forwards;
-}
-
-.corner-bottom-right {
-  animation: from-bottom-right 2.5s forwards;
-}
-
-@keyframes from-top-left {
-  0% {
-    top: 0;
-    left: 0;
-    transform: translate(-100%, -100%) rotate(0deg);
-  }
-  40% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  60% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  100% {
-    top: 0;
-    left: 0;
-    transform: translate(-100%, -100%) rotate(0deg);
-  }
-}
-
-@keyframes from-top-right {
-  0% {
-    top: 0;
-    left: 100%;
-    transform: translate(0, -100%) rotate(0deg);
-  }
-  40% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  60% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  100% {
-    top: 0;
-    left: 100%;
-    transform: translate(0, -100%) rotate(0deg);
-  }
-}
-
-@keyframes from-bottom-left {
-  0% {
-    top: 100%;
-    left: 0;
-    transform: translate(-100%, 0) rotate(0deg);
-  }
-  40% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  60% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  100% {
-    top: 100%;
-    left: 0;
-    transform: translate(-100%, 0) rotate(0deg);
-  }
-}
-
-@keyframes from-bottom-right {
-  0% {
-    top: 100%;
-    left: 100%;
-    transform: translate(0, 0) rotate(0deg);
-  }
-  40% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  60% {
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -100%) rotate(720deg);
-  }
-  100% {
-    top: 100%;
-    left: 100%;
-    transform: translate(0, 0) rotate(0deg);
-  }
-}
-</style>
 
 <style lang="scss">
 @import "./assets/scss/style.scss";
