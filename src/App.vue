@@ -31,16 +31,16 @@
   </div>
   <div class="p-4">
     <div class="row justify-content-center">
-      <div class="col col-8">
+      <div class="col col-12 col-md-8">
         <DaySelection
           :selected="selectedDay"
           :update-func="getRestaurantsForDay"
         />
       </div>
-      <div class="col col-2 col-md-1">
+      <div class="col col-4 col-md-1">
         <RetardScale />
       </div>
-      <div class="col col-2 col-md-1">
+      <div class="col col-3 col-md-1">
         <HiddenMenusDialog :menus="menus" />
       </div>
       <div class="col col-2 col-md-1">
@@ -112,6 +112,9 @@ const dragOptions = computed(() => {
     disabled: false,
     ghostClass: "ghost",
     itemKey: "id",
+    delay: 200,
+    delayOnTouchOnly: true,
+    touchStartThreshold: 4,
     componentData: {
       tag: "ul",
       type: "transition-group",
