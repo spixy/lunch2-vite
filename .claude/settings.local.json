@@ -1,12 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:vitejs.dev)",
-      "WebFetch(domain:vite.dev)",
-      "WebSearch",
-      "Bash(cd \"C:/Projects/lunchinator/lunch2-vite\" && npm run build 2>&1)",
-      "Bash(cd \"C:/Projects/lunchinator/lunch2-vite\" && npm run build 2>&1 | head -20)"
-    ]
+    "allow": ["WebFetch(domain:github.com)", "WebFetch(domain:vitejs.dev)", "WebFetch(domain:vite.dev)", "WebSearch"]
   }
 }
