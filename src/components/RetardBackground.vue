@@ -2,7 +2,7 @@
   <div
     v-if="store.state.retardMode || store.state.filipMode"
     class="retard-background"
-    :class="{ 'flashing': store.state.backgroundFlashing }"
+    :class="{ flashing: store.state.backgroundFlashing }"
   >
     <div
       v-for="(img, index) in selectedImages"
@@ -51,13 +51,15 @@ const audioFilip = new Audio(panjabiAudio);
 audioFilip.loop = true;
 
 // Get all jpg images from the assets folder
-const retardImagesGlob = import.meta.glob("../assets/retard-images/*.jpg", {
+const retardImagesGlob = import.meta.glob<string>("../assets/retard-images/*.jpg", {
   eager: true,
-  as: "url",
+  query: "?url",
+  import: "default",
 });
-const filipImagesGlob = import.meta.glob("../assets/filip-images/*.jpg", {
+const filipImagesGlob = import.meta.glob<string>("../assets/filip-images/*.jpg", {
   eager: true,
-  as: "url",
+  query: "?url",
+  import: "default",
 });
 
 const retardImagePaths = Object.values(retardImagesGlob);
