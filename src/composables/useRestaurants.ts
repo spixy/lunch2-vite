@@ -47,14 +47,14 @@ export function useRestaurants() {
 
   const getRestaurantsForDay = async (day: number) => {
     selectedDay.value = day;
-    let response: Restaurant[] = await fetch(`${baseUrl}/get?day=${days[day]}`).then((r) =>
+    const response: Restaurant[] = await fetch(`${baseUrl}/get?day=${days[day]}`).then((r) =>
       r.json(),
     );
-    if (store.state.filipMode) {
-      response = response.filter((res) => res.restaurant === "Padagali");
-    }
     updateRestaurantOrder(response);
-    menus.value = sortRestaurantDays(restaurantToRestaurantDay(response));
+    const displayed = store.state.filipMode
+      ? response.filter((res) => res.restaurant === "Padagali")
+      : response;
+    menus.value = sortRestaurantDays(restaurantToRestaurantDay(displayed));
   };
 
   const swapRestaurants = (id: number, direction: Direction) => {
@@ -74,11 +74,13 @@ export function useRestaurants() {
   };
 
   const saveOrderAfterDrag = () => {
-    const newOrder: SavedRestaurant[] = menus.value.map(({ id }, index) => {
+    const visibleIds = new Set(menus.value.map(({ id }) => id));
+    const updated: SavedRestaurant[] = menus.value.map(({ id }, index) => {
       const existing = store.state.restaurantOrder.find((item) => item.id === id);
       return { id, index, isHidden: existing?.isHidden ?? false };
     });
-    store.commit("setRestaurantOrder", newOrder);
+    const unchanged = store.state.restaurantOrder.filter((item) => !visibleIds.has(item.id));
+    store.commit("setRestaurantOrder", [...updated, ...unchanged]);
   };
 
   store.subscribe((mutation) => {
