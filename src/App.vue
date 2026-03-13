@@ -30,29 +30,33 @@
     </h1>
   </div>
   <div class="p-4">
-    <div class="row justify-content-center">
-      <div class="col col-12 col-md-8">
+    <div class="controls-bar">
+      <div class="controls-bar__day">
         <DaySelection
           :selected="selectedDay"
           :update-func="getRestaurantsForDay"
         />
       </div>
-      <div class="col col-4 col-md-1">
+      <div
+        v-if="store.state.retardMode || store.state.filipMode"
+        class="controls-bar__retard-scale"
+      >
         <RetardScale />
       </div>
-      <div class="col col-3 col-md-1">
+      <div class="controls-bar__actions">
         <HiddenMenusDialog :menus="menus" />
+        <div class="controls-bar__selectors">
+          <ThemeSelector />
+          <RetardSelector />
+          <FilipSelector />
+        </div>
       </div>
-      <div class="col col-2 col-md-1">
-        <ThemeSelector />
-        <RetardSelector />
-        <FilipSelector />
-      </div>
+
     </div>
     <Draggable
       v-model="menus"
       v-bind="dragOptions"
-      @start="drag = true"
+      @start="onDragStart"
       @end="onDragEnd"
     >
       <template #item="{ element }">
@@ -115,6 +119,7 @@ const dragOptions = computed(() => {
     delay: 200,
     delayOnTouchOnly: true,
     touchStartThreshold: 4,
+    forceFallback: true,
     componentData: {
       tag: "ul",
       type: "transition-group",
@@ -230,8 +235,18 @@ store.subscribe((mutation) => {
 
 getRestaurantsForDay(selectedDay.value);
 
+const handleWheelDuringDrag = (e: WheelEvent) => {
+  window.scrollBy({ top: e.deltaY, behavior: "instant" as ScrollBehavior });
+};
+
+const onDragStart = () => {
+  drag.value = true;
+  window.addEventListener("wheel", handleWheelDuringDrag);
+};
+
 const onDragEnd = () => {
   drag.value = false;
+  window.removeEventListener("wheel", handleWheelDuringDrag);
   const newRestaurantOrder: SavedRestaurant[] = menus.value.map(({ id }, index) => {
     const existing = store.state.restaurantOrder.find((item) => item.id === id);
     return {
@@ -245,6 +260,58 @@ const onDragEnd = () => {
 </script>
 
 <style scoped>
+.controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.controls-bar__day {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.controls-bar__retard-scale {
+  width: 100%;
+}
+
+.controls-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .controls-bar__actions {
+    width: auto;
+    justify-content: flex-start;
+  }
+}
+
+.controls-bar__selectors {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .controls-bar__day {
+    flex: 1;
+    width: auto;
+    justify-content: flex-start;
+  }
+
+  .controls-bar__retard-scale {
+    width: auto;
+  }
+}
+
 .retard-bounce {
   animation: retard-bounce 0.5s infinite linear;
   display: block;
