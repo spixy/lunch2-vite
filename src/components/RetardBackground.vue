@@ -4,34 +4,34 @@
     class="retard-background"
     :class="{ flashing: store.state.backgroundFlashing }"
   >
-    <div
-      v-for="(img, index) in selectedImages"
-      :key="index + '-' + retardScaleKey"
-      class="image-container"
-      :style="containerStyles[index]"
-    >
-      <marquee
-        :behavior="behaviors[index % behaviors.length]"
-        :direction="horizontalDirections[index % horizontalDirections.length]"
-        :scrollamount="scaledScrollAmount(index)"
-        class="floating-marquee-horizontal"
+      <div
+        v-for="(img, index) in selectedImages"
+        :key="index + '-' + retardScaleKey"
+        class="image-container"
+        :style="containerStyles[index]"
       >
-        <marquee
-          :behavior="behaviors[(index + 1) % behaviors.length]"
-          :direction="verticalDirections[index % verticalDirections.length]"
-          :scrollamount="scaledScrollAmount(index + 1)"
-          class="floating-marquee-vertical"
+        <CustomMarquee
+          :behavior="behaviors[index % behaviors.length]"
+          :direction="horizontalDirections[index % horizontalDirections.length]"
+          :scrollamount="scaledScrollAmount(index)"
+          class="floating-marquee-horizontal"
         >
-          <img
-            :src="img"
-            class="floating-img"
-            :class="{ spinning: spinningIndex === index }"
-          />
-        </marquee>
-      </marquee>
+          <CustomMarquee
+            :behavior="behaviors[(index + 1) % behaviors.length]"
+            :direction="verticalDirections[index % verticalDirections.length]"
+            :scrollamount="scaledScrollAmount(index + 1)"
+            class="floating-marquee-vertical"
+          >
+            <img
+              :src="img"
+              class="floating-img"
+              :class="{ spinning: spinningIndex === index }"
+            />
+          </CustomMarquee>
+        </CustomMarquee>
+      </div>
     </div>
-  </div>
-</template>
+  </template>
 
 <script setup lang="ts">
 import { useStore } from "vuex";
@@ -39,6 +39,7 @@ import { key } from "../store";
 import { ref, onMounted, watch, onUnmounted, computed } from "vue";
 import penzionAudio from "../assets/audio/penzion.mp3";
 import panjabiAudio from "../assets/audio/panjabi.mp3";
+import CustomMarquee from "./CustomMarquee.vue";
 
 const store = useStore(key);
 const selectedImages = ref<string[]>([]);
@@ -86,12 +87,13 @@ const selectRandomImages = () => {
   if (imagePaths.value.length === 0) return;
 
   const shuffled = [...imagePaths.value].sort(() => 0.5 - Math.random());
-  const limit = store.state.filipMode ? 4 : 2;
+  const limit = store.state.filipMode ? 4 : 3;
   selectedImages.value = shuffled.slice(0, limit);
 
-  // Randomize starting top positions for containers to cover more screen height
+  // Randomize starting top positions and rotation for containers to cover more screen height and move randomly
   containerStyles.value = selectedImages.value.map(() => ({
     top: Math.random() * 60 + "vh",
+    transform: `rotate(${Math.random() * 360}deg)`,
   }));
 };
 
@@ -229,6 +231,7 @@ watch(
   position: absolute;
   width: 100%;
   height: 400px; /* Give it some height for the vertical marquee to work in */
+  overflow: visible;
 }
 
 .floating-marquee-horizontal {
