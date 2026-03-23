@@ -73,9 +73,9 @@ const imagePaths = computed(() => {
   return retardImagePaths;
 });
 
-const behaviors = ["alternate", "scroll"];
-const horizontalDirections = ["left", "right"];
-const verticalDirections = ["up", "down"];
+const behaviors = ["alternate", "scroll"] as const;
+const horizontalDirections = ["left", "right"] as const;
+const verticalDirections = ["up", "down"] as const;
 const scrollAmounts = [10, 15, 20, 25, 30, 35];
 
 const retardScale = computed(() => store.state.retardScale);
