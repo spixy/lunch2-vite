@@ -32,14 +32,17 @@
               :key="restaurant.id"
               class="list-group-item d-flex justify-content-between align-items-center"
             >
-              <marquee
+              <CustomMarquee
                 v-if="store.state.retardMode"
                 :scrollamount="scaledScrollAmount()"
-                style="max-width: 400px"
+                class="flex-grow-1 me-2"
               >
                 {{ restaurant.restaurant }}
-              </marquee>
-              <span v-else>{{ restaurant.restaurant }}</span>
+              </CustomMarquee>
+              <span
+                v-else
+                class="flex-grow-1 me-2"
+              >{{ restaurant.restaurant }}</span>
               <button
                 type="button"
                 class="btn btn-sm btn-primary"
@@ -69,6 +72,7 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
 import type { RestaurantDay } from "../types/Restaurant";
+import CustomMarquee from "./CustomMarquee.vue";
 
 const props = defineProps<{
   menus: RestaurantDay[];
@@ -84,7 +88,7 @@ const hideButtonClass = computed(() => {
     : "btn btn-outline-primary hide-button-light";
 });
 
-const randomScrollAmount = () => Math.floor(Math.random() * 70) + 30;
+const randomScrollAmount = () => Math.floor(Math.random() * 10) + 8;
 
 const scaledScrollAmount = () => Math.floor(randomScrollAmount() * store.state.retardScale);
 

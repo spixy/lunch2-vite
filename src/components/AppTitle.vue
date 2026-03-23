@@ -7,14 +7,14 @@
       class="text-center"
       :class="{ 'retard-bounce': isSpecialMode }"
     >
-      <marquee
+      <CustomMarquee
         v-if="isSpecialMode"
         :key="retardScaleKey"
         behavior="alternate"
         :scrollamount="20 * retardScale"
       >
         {{ title }}
-      </marquee>
+      </CustomMarquee>
       <template v-else>
         {{ title }}
       </template>
@@ -26,6 +26,7 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import { key } from "../store";
+import CustomMarquee from "./CustomMarquee.vue";
 
 const titles = [
   "Hop Hop",
@@ -43,6 +44,7 @@ const titles = [
   "televizia Markíza uvádzá {title}",
   "V O L H A",
   "- Pomoc",
+  "- Grind metal a takové ty těžké"
 ];
 
 const store = useStore(key);
