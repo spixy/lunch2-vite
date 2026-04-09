@@ -52,12 +52,12 @@ const audioFilip = new Audio(panjabiAudio);
 audioFilip.loop = true;
 
 // Get all jpg images from the assets folder
-const retardImagesGlob = import.meta.glob<string>("../assets/retard-images/*.jpg", {
+const retardImagesGlob = import.meta.glob<string>("../assets/retard-images/*.{jpg,png,gif}", {
   eager: true,
   query: "?url",
   import: "default",
 });
-const filipImagesGlob = import.meta.glob<string>("../assets/filip-images/*.jpg", {
+const filipImagesGlob = import.meta.glob<string>("../assets/filip-images/*.{jpg,png,gif}", {
   eager: true,
   query: "?url",
   import: "default",
@@ -87,7 +87,7 @@ const selectRandomImages = () => {
   if (imagePaths.value.length === 0) return;
 
   const shuffled = [...imagePaths.value].sort(() => 0.5 - Math.random());
-  const limit = store.state.filipMode ? 4 : 3;
+  const limit = store.state.filipMode ? 4 : 4;
   selectedImages.value = shuffled.slice(0, limit);
 
   // Randomize starting top positions and rotation for containers to cover more screen height and move randomly
