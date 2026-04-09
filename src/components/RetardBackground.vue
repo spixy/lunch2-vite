@@ -4,34 +4,34 @@
     class="retard-background"
     :class="{ flashing: store.state.backgroundFlashing }"
   >
-      <div
-        v-for="(img, index) in selectedImages"
-        :key="index + '-' + retardScaleKey"
-        class="image-container"
-        :style="containerStyles[index]"
+    <div
+      v-for="(img, index) in selectedImages"
+      :key="index + '-' + retardScaleKey"
+      class="image-container"
+      :style="containerStyles[index]"
+    >
+      <CustomMarquee
+        :behavior="behaviors[index % behaviors.length]"
+        :direction="horizontalDirections[index % horizontalDirections.length]"
+        :scrollamount="scaledScrollAmount(index)"
+        class="floating-marquee-horizontal"
       >
         <CustomMarquee
-          :behavior="behaviors[index % behaviors.length]"
-          :direction="horizontalDirections[index % horizontalDirections.length]"
-          :scrollamount="scaledScrollAmount(index)"
-          class="floating-marquee-horizontal"
+          :behavior="behaviors[(index + 1) % behaviors.length]"
+          :direction="verticalDirections[index % verticalDirections.length]"
+          :scrollamount="scaledScrollAmount(index + 1)"
+          class="floating-marquee-vertical"
         >
-          <CustomMarquee
-            :behavior="behaviors[(index + 1) % behaviors.length]"
-            :direction="verticalDirections[index % verticalDirections.length]"
-            :scrollamount="scaledScrollAmount(index + 1)"
-            class="floating-marquee-vertical"
-          >
-            <img
-              :src="img"
-              class="floating-img"
-              :class="{ spinning: spinningIndex === index }"
-            />
-          </CustomMarquee>
+          <img
+            :src="img"
+            class="floating-img"
+            :class="{ spinning: spinningIndex === index }"
+          />
         </CustomMarquee>
-      </div>
+      </CustomMarquee>
     </div>
-  </template>
+  </div>
+</template>
 
 <script setup lang="ts">
 import { useStore } from "vuex";
