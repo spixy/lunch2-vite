@@ -51,14 +51,14 @@
       </div>
       <div
         class="card-body"
-        style="padding: 0px"
+        style="padding: 0"
       >
         <ul class="list-group">
           <li
             v-for="soup in menu.meals.filter((meal) => meal.isSoup)"
             :key="soup.name"
             class="list-group-item active"
-            style="border-radius: 0px; background-color: var(--bs-soup-bg); border-color: var(--bs-soup-bg)"
+            style="border-radius: 0; background-color: var(--bs-soup-bg); border-color: var(--bs-soup-bg)"
           >
             <div class="row">
               <div class="col col-9">
@@ -77,7 +77,7 @@
             v-for="soup in menu.permanentmeals.filter((meal) => meal.isSoup)"
             :key="soup.name"
             class="list-group-item active"
-            style="border-radius: 0px; background-color: var(--bs-soup-bg); border-color: var(--bs-soup-bg)"
+            style="border-radius: 0; background-color: var(--bs-soup-bg); border-color: var(--bs-soup-bg)"
           >
             <div class="row">
               <div class="col col-9">
@@ -93,10 +93,10 @@
             </div>
           </li>
           <li
-            v-for="meal in menu.meals.filter((meal) => !meal.isSoup)"
+            v-for="meal in menu.meals.filter((m) => !m.isSoup)"
             :key="meal.name"
             class="list-group-item"
-            style="border-radius: 0px"
+            style="border-radius: 0"
           >
             <div class="row">
               <div class="col col-9">
@@ -112,10 +112,20 @@
             </div>
           </li>
           <li
+            v-if="store.state.retardMode && menu.id === 4"
+            class="list-group-item"
+            style="border-radius: 0"
+          >
+            <div class="row">
+              <div class="col col-9">Smažený parmezán s presolenými hranolkami</div>
+              <div class="col col-3 text-end">359 Kč</div>
+            </div>
+          </li>
+          <li
             v-for="meal in menu.permanentmeals.filter((meal) => !meal.isSoup)"
             :key="meal.name"
             class="list-group-item"
-            style="border-radius: 0px"
+            style="border-radius: 0"
           >
             <div class="row">
               <div class="col col-9">
