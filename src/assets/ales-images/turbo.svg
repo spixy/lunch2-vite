@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 220" width="260" height="220">
+  <path d="M40 110 a80 80 0 1 1 80 80 h-30 a50 50 0 1 0-50-50z" fill="#495057" />
+  <circle cx="120" cy="110" r="66" fill="#343a40" />
+  <g fill="#ced4da">
+    <path d="M120 110 l52-20 8 22z" /><path d="M120 110 l30 48-20 12z" />
+    <path d="M120 110 l-50 26-12-20z" /><path d="M120 110 l-18-52 24-6z" />
+  </g>
+  <circle cx="120" cy="110" r="16" fill="#f1a208" />
+  <rect x="186" y="86" width="60" height="48" rx="10" fill="#6c757d" />
+  <rect x="70" y="176" width="80" height="34" rx="8" fill="#6c757d" />
+  <text x="130" y="30" font-family="Arial, sans-serif" font-size="24" font-weight="bold"
+        fill="#e03131" text-anchor="middle">TURBO</text>
+</svg>

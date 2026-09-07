@@ -18,6 +18,7 @@
         <ThemeSelector />
         <RetardSelector />
         <FilipSelector />
+        <AlesSelector />
       </div>
     </div>
   </div>
@@ -34,6 +35,7 @@ import RetardScale from "./RetardScale.vue";
 import ThemeSelector from "./ThemeSelector.vue";
 import RetardSelector from "./RetardSelector.vue";
 import FilipSelector from "./FilipSelector.vue";
+import AlesSelector from "./AlesSelector.vue";
 
 defineProps<{
   menus: RestaurantDay[];
@@ -42,7 +44,9 @@ defineProps<{
 }>();
 
 const store = useStore(key);
-const isSpecialMode = computed(() => store.state.retardMode || store.state.filipMode);
+const isSpecialMode = computed(
+  () => store.state.retardMode || store.state.filipMode || store.state.alesMode,
+);
 </script>
 
 <style scoped>

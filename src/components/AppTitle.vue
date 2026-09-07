@@ -49,7 +49,9 @@ const titles = [
 
 const store = useStore(key);
 
-const isSpecialMode = computed(() => store.state.retardMode || store.state.filipMode);
+const isSpecialMode = computed(
+  () => store.state.retardMode || store.state.filipMode || store.state.alesMode,
+);
 const retardScale = computed(() => store.state.retardScale);
 const retardScaleKey = computed(() => retardScale.value.toFixed(2));
 

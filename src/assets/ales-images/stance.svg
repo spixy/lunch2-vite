@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <path d="M30 148 h340" stroke="#495057" stroke-width="8" />
+  <path d="M70 140 c6-46 30-66 74-68 h60 c36 0 62 20 80 46 l16 22z" fill="#1c7ed6" />
+  <path d="M108 106 c8-28 22-38 48-40 h48 c24 0 42 14 56 36z" fill="#0b1a26" opacity="0.8" />
+  <rect x="72" y="126" width="248" height="18" rx="6" fill="#1971c2" />
+  <g>
+    <circle cx="126" cy="144" r="24" fill="#16191d" />
+    <circle cx="126" cy="144" r="10" fill="#e9ecef" />
+    <circle cx="288" cy="144" r="24" fill="#16191d" />
+    <circle cx="288" cy="144" r="10" fill="#e9ecef" />
+  </g>
+  <text x="200" y="186" font-family="Arial, sans-serif" font-size="26" font-weight="bold"
+        fill="#e9ecef" text-anchor="middle">LOW &amp; SLOW</text>
+</svg>

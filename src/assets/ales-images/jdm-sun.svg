@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <circle cx="150" cy="150" r="146" fill="#f8f9fa" />
+  <g fill="#e03131">
+    <circle cx="150" cy="150" r="52" />
+    <g id="rays">
+      <path d="M150 150 L296 128 296 172z" /><path d="M150 150 L286 62 306 100z" />
+      <path d="M150 150 L246 26 276 58z" /><path d="M150 150 L172 4 128 4z" />
+      <path d="M150 150 L62 14 24 34z" /><path d="M150 150 L26 54 4 92z" />
+      <path d="M150 150 L4 128 4 172z" /><path d="M150 150 L14 238 34 276z" />
+      <path d="M150 150 L54 274 92 296z" /><path d="M150 150 L128 296 172 296z" />
+      <path d="M150 150 L238 286 276 266z" /><path d="M150 150 L274 246 296 208z" />
+    </g>
+  </g>
+</svg>
