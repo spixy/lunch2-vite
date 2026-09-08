@@ -39,6 +39,7 @@ import { key } from "../store";
 import { ref, onMounted, watch, onUnmounted, computed } from "vue";
 import penzionAudio from "../assets/audio/penzion.mp3";
 import panjabiAudio from "../assets/audio/panjabi.mp3";
+import tokyoAudio from "../assets/audio/tokyo.mp3";
 import CustomMarquee from "./CustomMarquee.vue";
 
 const store = useStore(key);
@@ -50,16 +51,8 @@ const audio = new Audio(penzionAudio);
 audio.loop = true;
 const audioFilip = new Audio(panjabiAudio);
 audioFilip.loop = true;
-const alesAudioGlob = import.meta.glob<string>("../assets/audio/ales/*.mp3", {
-  eager: true,
-  query: "?url",
-  import: "default",
-});
-const alesAudioPath = Object.values(alesAudioGlob)[0];
-const audioAles = alesAudioPath ? new Audio(alesAudioPath) : null;
-if (audioAles) {
-  audioAles.loop = true;
-}
+const audioAles = new Audio(tokyoAudio);
+audioAles.loop = true;
 
 // Get all jpg images from the assets folder
 const retardImagesGlob = import.meta.glob<string>("../assets/retard-images/*.{jpg,png,gif}", {
@@ -156,7 +149,7 @@ onMounted(() => {
     audioFilip.playbackRate = retardScale.value;
     audioFilip.play().catch((e) => console.log("Audio play failed:", e));
   }
-  if (store.state.alesMode && audioAles) {
+  if (store.state.alesMode) {
     audioAles.playbackRate = retardScale.value;
     audioAles.play().catch((e) => console.log("Audio play failed:", e));
   }
@@ -166,7 +159,7 @@ onUnmounted(() => {
   stopChaosLogic();
   audio.pause();
   audioFilip.pause();
-  audioAles?.pause();
+  audioAles.pause();
 });
 
 // Re-select images when retard mode is toggled to make it more "random" each time
@@ -192,9 +185,7 @@ watch(
   (newVal) => {
     audio.playbackRate = newVal;
     audioFilip.playbackRate = newVal;
-    if (audioAles) {
-      audioAles.playbackRate = newVal;
-    }
+    audioAles.playbackRate = newVal;
   },
 );
 
@@ -223,12 +214,10 @@ watch(
     if (newVal) {
       selectRandomImages();
       startChaosLogic();
-      if (audioAles) {
-        audioAles.playbackRate = retardScale.value;
-        audioAles.play().catch((e) => console.log("Audio play failed:", e));
-      }
+      audioAles.playbackRate = retardScale.value;
+      audioAles.play().catch((e) => console.log("Audio play failed:", e));
     } else {
-      audioAles?.pause();
+      audioAles.pause();
       if (!store.state.retardMode && !store.state.filipMode) {
         stopChaosLogic();
       } else {
