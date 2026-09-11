@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="store.state.retardMode || store.state.filipMode"
+    v-if="store.state.retardMode || store.state.filipMode || store.state.alesMode"
     class="retard-background"
     :class="{ flashing: store.state.backgroundFlashing }"
   >
@@ -39,6 +39,7 @@ import { key } from "../store";
 import { ref, onMounted, watch, onUnmounted, computed } from "vue";
 import penzionAudio from "../assets/audio/penzion.mp3";
 import panjabiAudio from "../assets/audio/panjabi.mp3";
+import tokyoAudio from "../assets/audio/tokyo.mp3";
 import CustomMarquee from "./CustomMarquee.vue";
 
 const store = useStore(key);
@@ -50,6 +51,8 @@ const audio = new Audio(penzionAudio);
 audio.loop = true;
 const audioFilip = new Audio(panjabiAudio);
 audioFilip.loop = true;
+const audioAles = new Audio(tokyoAudio);
+audioAles.loop = true;
 
 // Get all jpg images from the assets folder
 const retardImagesGlob = import.meta.glob<string>("../assets/retard-images/*.{jpg,png,gif}", {
@@ -62,13 +65,22 @@ const filipImagesGlob = import.meta.glob<string>("../assets/filip-images/*.{jpg,
   query: "?url",
   import: "default",
 });
+const alesImagesGlob = import.meta.glob<string>("../assets/ales-images/*.{jpg,png,gif,svg}", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
 
 const retardImagePaths = Object.values(retardImagesGlob);
 const filipImagePaths = Object.values(filipImagesGlob);
+const alesImagePaths = Object.values(alesImagesGlob);
 
 const imagePaths = computed(() => {
   if (store.state.filipMode) {
     return filipImagePaths;
+  }
+  if (store.state.alesMode) {
+    return alesImagePaths;
   }
   return retardImagePaths;
 });
@@ -126,7 +138,7 @@ const stopChaosLogic = () => {
 
 onMounted(() => {
   selectRandomImages();
-  if (store.state.retardMode || store.state.filipMode) {
+  if (store.state.retardMode || store.state.filipMode || store.state.alesMode) {
     startChaosLogic();
   }
   if (store.state.retardMode) {
@@ -137,12 +149,17 @@ onMounted(() => {
     audioFilip.playbackRate = retardScale.value;
     audioFilip.play().catch((e) => console.log("Audio play failed:", e));
   }
+  if (store.state.alesMode) {
+    audioAles.playbackRate = retardScale.value;
+    audioAles.play().catch((e) => console.log("Audio play failed:", e));
+  }
 });
 
 onUnmounted(() => {
   stopChaosLogic();
   audio.pause();
   audioFilip.pause();
+  audioAles.pause();
 });
 
 // Re-select images when retard mode is toggled to make it more "random" each time
@@ -156,7 +173,7 @@ watch(
       audio.play().catch((e) => console.log("Audio play failed:", e));
     } else {
       audio.pause();
-      if (!store.state.filipMode) {
+      if (!store.state.filipMode && !store.state.alesMode) {
         stopChaosLogic();
       }
     }
@@ -168,6 +185,7 @@ watch(
   (newVal) => {
     audio.playbackRate = newVal;
     audioFilip.playbackRate = newVal;
+    audioAles.playbackRate = newVal;
   },
 );
 
@@ -181,7 +199,26 @@ watch(
       audioFilip.play().catch((e) => console.log("Audio play failed:", e));
     } else {
       audioFilip.pause();
-      if (!store.state.retardMode) {
+      if (!store.state.retardMode && !store.state.alesMode) {
+        stopChaosLogic();
+      } else {
+        selectRandomImages();
+      }
+    }
+  },
+);
+
+watch(
+  () => store.state.alesMode,
+  (newVal) => {
+    if (newVal) {
+      selectRandomImages();
+      startChaosLogic();
+      audioAles.playbackRate = retardScale.value;
+      audioAles.play().catch((e) => console.log("Audio play failed:", e));
+    } else {
+      audioAles.pause();
+      if (!store.state.retardMode && !store.state.filipMode) {
         stopChaosLogic();
       } else {
         selectRandomImages();

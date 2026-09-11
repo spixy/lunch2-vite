@@ -84,7 +84,11 @@ export function useRestaurants() {
   };
 
   store.subscribe((mutation) => {
-    if (mutation.type === "toggleFilipMode" || mutation.type === "toggleRetardMode") {
+    if (
+      mutation.type === "toggleFilipMode" ||
+      mutation.type === "toggleRetardMode" ||
+      mutation.type === "toggleAlesMode"
+    ) {
       getRestaurantsForDay(selectedDay.value);
     }
   });

@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="store.state.retardMode || store.state.filipMode"
+    v-if="store.state.retardMode || store.state.filipMode || store.state.alesMode"
     class="mt-2"
   >
     <input
@@ -11,7 +11,7 @@
       step="0.5"
       class="form-range"
     />
-    <label class="form-label mb-1"> {{ store.state.filipMode ? 'Filip scale' : 'Retard scale' }}: {{ retardScale }} </label>
+    <label class="form-label mb-1"> {{ scaleLabel }}: {{ retardScale }} </label>
   </div>
 </template>
 
@@ -21,6 +21,16 @@ import { useStore } from "vuex";
 import { key } from "../store";
 
 const store = useStore(key);
+
+const scaleLabel = computed(() => {
+  if (store.state.filipMode) {
+    return "Filip scale";
+  }
+  if (store.state.alesMode) {
+    return "Otáčky";
+  }
+  return "Retard scale";
+});
 
 const retardScale = computed({
   get: () => store.state.retardScale,

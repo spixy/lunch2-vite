@@ -11,6 +11,7 @@ export interface State {
   darkTheme: boolean;
   retardMode: boolean;
   filipMode: boolean;
+  alesMode: boolean;
   retardScale: number;
   restaurantOrder: SavedRestaurant[];
   awpVisible: boolean;
@@ -48,6 +49,7 @@ export const store = createStore<State>({
     darkTheme: globalThis.localStorage.getItem("darkTheme") === "true" || false,
     retardMode: globalThis.localStorage.getItem("retardMode") === "true" || false,
     filipMode: globalThis.localStorage.getItem("filipMode") === "true" || false,
+    alesMode: globalThis.localStorage.getItem("alesMode") === "true" || false,
     retardScale: (() => {
       const value = globalThis.localStorage.getItem("retardScale");
       if (value === null) {
@@ -79,6 +81,8 @@ export const store = createStore<State>({
       if (state.retardMode) {
         state.filipMode = false;
         globalThis.localStorage.setItem("filipMode", "false");
+        state.alesMode = false;
+        globalThis.localStorage.setItem("alesMode", "false");
       }
       globalThis.localStorage.setItem("retardMode", state.retardMode ? "true" : "false");
     },
@@ -130,8 +134,20 @@ export const store = createStore<State>({
       if (state.filipMode) {
         state.retardMode = false;
         globalThis.localStorage.setItem("retardMode", "false");
+        state.alesMode = false;
+        globalThis.localStorage.setItem("alesMode", "false");
       }
       globalThis.localStorage.setItem("filipMode", state.filipMode ? "true" : "false");
+    },
+    toggleAlesMode(state: State) {
+      state.alesMode = !state.alesMode;
+      if (state.alesMode) {
+        state.retardMode = false;
+        globalThis.localStorage.setItem("retardMode", "false");
+        state.filipMode = false;
+        globalThis.localStorage.setItem("filipMode", "false");
+      }
+      globalThis.localStorage.setItem("alesMode", state.alesMode ? "true" : "false");
     },
   },
 });
